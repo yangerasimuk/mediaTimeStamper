@@ -61,4 +61,7 @@ typedef enum YGFileNameType YGFileNameType;
 //
 -(BOOL) isEqual:(YGFile *)otherFile;
 
+// checking for EXIF info availible
+-(BOOL)isEXIFAvailible;
+
 @end

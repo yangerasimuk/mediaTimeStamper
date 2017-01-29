@@ -257,4 +257,34 @@
     return resultCheck;
 }
 
+-(BOOL)isEXIFAvailible{
+    
+    if(type != YGFileTypePhoto)
+        return NO;
+    
+    CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)URL, NULL); // 1
+    if (source){
+        
+        NSDictionary *props = (NSDictionary*) CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
+        NSDictionary *exif = props[@"{Exif}"];
+        
+        if(props == nil || [props count] == 0 || exif == nil || [exif count] == 0)
+            return NO;
+        
+        NSString *dateSrcString = [NSString stringWithFormat:@"%@", exif[@"DateTimeOriginal"]];
+        NSDateFormatter *formatterFromSrc = [[NSDateFormatter alloc] init];
+        [formatterFromSrc setDateFormat:@"yyyy:MM:dd HH:mm:ss"]; //2013:06:15 18:38:33
+        
+        NSDate *date = [formatterFromSrc dateFromString:dateSrcString];
+        NSDateFormatter *formaterToDst = [[NSDateFormatter alloc] init];
+        [formaterToDst setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
+        NSString *dateDstString = [formaterToDst stringFromDate:date];
+        
+        if([dateDstString length] == 19)
+            return YES;
+    }
+    
+    return NO;
+}
+
 @end

@@ -50,6 +50,14 @@ int main(int argc, const char * argv[]) {
             
             if(file.type & (YGFileTypePhoto | YGFileTypePhotoDepend) && (file.nameType == YGFileNameTypeRaw)){
                 
+                if(file.type == YGFileTypePhoto && ![file isEXIFAvailible]){
+                    if(!isAppModeSilent){
+                        printf("\n%s - skip processing, EXIF info unavailible", [[file name] cStringUsingEncoding:NSUTF8StringEncoding]);
+                    }
+                    
+                    continue;
+                }
+                
                 NSString *newFileName = @"";
                 
                 if(file.type == YGFileTypePhotoDepend && file.nameType == YGFileNameTypeRaw)
@@ -66,18 +74,19 @@ int main(int argc, const char * argv[]) {
                                 [YGFileRenamer removeFile:file];
                                 renamedFilesCount++;
                                 if(!isAppModeSilent)
-                                    printf("\n...%s -> %s", [[file name] cStringUsingEncoding:NSUTF8StringEncoding], [[newFile name] cStringUsingEncoding:NSUTF8StringEncoding]);
+                                    printf("\n%s -> %s", [[file name] cStringUsingEncoding:NSUTF8StringEncoding], [[newFile name] cStringUsingEncoding:NSUTF8StringEncoding]);
                             }
                         }
                     }
                     else{
-                        printf("\nWarning! File already exist on disk");
+                        if(!isAppModeSilent)
+                            printf("\n%s - skip processing, target file already exist on disk", [[file name] cStringUsingEncoding:NSUTF8StringEncoding]);
                     }
                 }
             } //if
             else{
                 if(!isAppModeSilent)
-                    printf("\n...%s - skip file", [[file name] cStringUsingEncoding:NSUTF8StringEncoding]);
+                    printf("\n%s - skip file", [[file name] cStringUsingEncoding:NSUTF8StringEncoding]);
             }
         } // for
         
