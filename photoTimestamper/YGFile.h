@@ -9,10 +9,10 @@
 #import <Foundation/Foundation.h>
 
 enum YGFileType {
-    YGFileTypePhotoNone    = 0,
-    YGFileTypePhoto        = 1 << 1,
-    YGFileTypePhotoDepend  = 1 << 2,
-    YGFileTypeVideo        = 1 << 3
+    YGFileTypeNone          = 0,
+    YGFileTypePhoto         = 1 << 0,
+    YGFileTypePhotoDepend   = 1 << 1,
+    YGFileTypeVideo         = 1 << 2
 
 };
 typedef enum YGFileType YGFileType;
@@ -25,17 +25,16 @@ typedef enum YGFileNameType YGFileNameType;
 
 @interface YGFile : NSObject {
     NSString *dir;
-    NSString *fileName;
-    NSString *fileOnlyName;
-    NSString *fileExtension;
+    NSString *nameWithoutExtension;
+    NSString *extension;
     NSString *fullName;
 }
 
+@property NSString *name;
 @property NSURL *URL;
 @property YGFileType type;
 @property YGFileNameType nameType;
 @property BOOL isExistOnDisk;
-
 
 
 // Init object by filename in current dir
@@ -54,10 +53,12 @@ typedef enum YGFileNameType YGFileNameType;
 -(NSUInteger) crcOfFile;
 
 //
-//+(YGFile *)fileWithTimestampNameFrom:(YGFile *)file;
-
 -(NSString *)makeTimestampName;
 
+//
+-(NSString *)makeTimestampNameFromMainFile;
+
+//
 -(BOOL) isEqual:(YGFile *)otherFile;
 
 @end

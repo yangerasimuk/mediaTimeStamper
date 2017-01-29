@@ -28,7 +28,7 @@
         resultFunc = YES;
     }
     else{
-        printf("\nError! Can not copy file");
+        printf("\nError! Can not copy file: %s to: %s", [srcFile.name cStringUsingEncoding:NSUTF8StringEncoding], [dstFile.name cStringUsingEncoding:NSUTF8StringEncoding]);
         if(error != nil)
             printf("\nError: %s", [[error description] cStringUsingEncoding:NSUTF8StringEncoding]);
     }
@@ -52,7 +52,7 @@
         resultFunc = YES;
     }
     else{
-        printf("\nError! Can not remove from disk old file");
+        printf("\nError! Can not remove old file: %s", [file.name cStringUsingEncoding:NSUTF8StringEncoding]);
         if(error != nil)
             printf("\nError: %s", [[error description] cStringUsingEncoding:NSUTF8StringEncoding]);
     }

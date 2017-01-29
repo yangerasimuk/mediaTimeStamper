@@ -16,10 +16,10 @@
  */
 +(NSString *)timeExecutingFrom:(NSDate *)start to:(NSDate *)finish{
     
-    NSString *resultTime = @"";
+    NSMutableString *resultTime = [[NSMutableString alloc] init];
     
     NSCalendar *gregorian = [[NSCalendar alloc]
-                             initWithCalendarIdentifier:NSGregorianCalendar];
+                             initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
     
     NSUInteger unitFlags = NSCalendarUnitMonth | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond | NSCalendarUnitNanosecond;
     
@@ -33,8 +33,35 @@
     NSInteger seconds = [components second];
     NSInteger nanoseconds = [components nanosecond];
     
-    resultTime = [NSString stringWithFormat:@"month: %ld, days: %ld, hours: %ld, minutes: %ld, seconds: %ld, nanoseconds: %ld", (long)months, (long)days, (long)hours, (long)minutes, (long)seconds, (long)nanoseconds];
-    return resultTime;
+    if(months > 0)
+        [resultTime appendString:[NSString stringWithFormat:@"%ld months", months]];
+    if(days > 0){
+        if([resultTime compare:@""] != NSOrderedSame)
+            [resultTime appendString:@", "];
+        [resultTime appendString:[NSString stringWithFormat:@"%ld days", days]];
+    }
+    if(hours > 0){
+        if([resultTime compare:@""] != NSOrderedSame)
+            [resultTime appendString:@", "];
+        [resultTime appendString:[NSString stringWithFormat:@"%ld hours", hours]];
+    }
+    if(minutes > 0){
+        if([resultTime compare:@""] != NSOrderedSame)
+            [resultTime appendString:@", "];
+        [resultTime appendString:[NSString stringWithFormat:@"%ld minutes", minutes]];
+    }
+    if(seconds > 0){
+        if([resultTime compare:@""] != NSOrderedSame)
+            [resultTime appendString:@", "];
+        [resultTime appendString:[NSString stringWithFormat:@"%ld seconds", seconds]];
+    }
+    if(nanoseconds > 0){
+        if([resultTime compare:@""] != NSOrderedSame)
+            [resultTime appendString:@", "];
+        [resultTime appendString:[NSString stringWithFormat:@"%ld nanoseconds", nanoseconds]];
+    }
+    
+    return [resultTime copy];
 }
 
 @end

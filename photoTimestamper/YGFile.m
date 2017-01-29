@@ -12,27 +12,29 @@
 #define kPhotoExtensions @[@"jpeg",@"JPEG",@"jpg",@"JPG",@"png",@"PNG",@"gif",@"GIF"]
 
 // Permissible extension for video files
-#define kVideoExtensions @[@"mov",@"mpeg"]
+#define kVideoExtensions @[@"mov",@"MOV",@"mpeg",@"MPEG",@"mp4",@"MP4"]
 
 // Permissible extension for files depend to photo files
 #define kDependPhotoExtensions @[@"AAE"]
 
 @interface YGFile()
 // Define file for this project: photo, file depends from photo (ex: .AAE), video and others
--(YGFileType) defineFileType:(NSString *)extension;
+-(void) defineFileType;
 
 // Define type of file name: raw (from camera) or timestamped (for example: '2017-01-27 21-26-51, IMG_0130.jpg')
--(YGFileNameType) defineFileNameType:(NSString *)filename;
+-(void) defineFileNameType;
 
 -(NSString *) nameOfFileType;
 -(NSString *) nameOfFileNameType;
-
-
 @end
 
 @implementation YGFile
 
-@synthesize URL, type, nameType, isExistOnDisk;
+@synthesize name, URL, type, nameType, isExistOnDisk;
+
+-(NSString *)description{
+    return [NSString stringWithFormat:@"%@ - %@ - %@", fullName, [self nameOfFileType], [self nameOfFileNameType]];
+}
 
 // Init object by filename in current dir
 -(YGFile *)initWithFileName:(NSString *)filename{
@@ -42,22 +44,20 @@
 // Init object by filename in specific dir
 -(YGFile *)initWithFileName:(NSString *)filename andDir:(NSString *)filepath{
     if([super init]){
-        //if(filepath == nil || [filepath compare:@""] == NSOrderedSame){
-        if([dir isEqualTo:nil] || dir == nil || [dir compare:@""] == NSOrderedSame){
+
+        if([dir isEqualTo:nil] || [dir compare:@""] == NSOrderedSame){
             NSFileManager *fm = [NSFileManager defaultManager];
             self->dir = [fm currentDirectoryPath];
         }
         else{
             self->dir = [filepath copy];
         }
-        self->fileName = [filename copy];
-        self->fileOnlyName = [self->fileName stringByDeletingPathExtension];
-        self->fileExtension = [filename pathExtension];
-        self->fullName = [NSString stringWithFormat:@"%@/%@", self->dir, self->fileName];
-        
-        //self->fileURL = [NSURL fileURLWithPath:self->fullName];
+
+        name = [filename copy];
+        self->nameWithoutExtension = [name stringByDeletingPathExtension];
+        self->extension = [name pathExtension];
+        self->fullName = [NSString stringWithFormat:@"%@/%@", self->dir, name];
         URL = [NSURL fileURLWithPath:self->fullName];
-        //NSLog(@"URL: %@", fileURL);
         
         [self defineFileType];
         [self defineFileNameType];
@@ -77,7 +77,6 @@
 
 -(NSUInteger) crcOfFile{
     NSUInteger resultCRC = 0;
-    NSFileManager *fm = [NSFileManager defaultManager];
     
     return resultCRC;
 }
@@ -99,7 +98,7 @@
         resultName = @"File depend from photo file";
     else if(type == YGFileTypeVideo)
         resultName = @"Video file";
-    else if(type == YGFileTypePhotoNone)
+    else if(type == YGFileTypeNone)
         resultName = @"File not processing by app";
     
     return resultName;
@@ -129,7 +128,7 @@
         NSLog(@"Cannot create regex-object, %@", [error description]);
     }
     
-    if ([regex numberOfMatchesInString:self->fileName options:matchingOptions range:NSMakeRange(0, [self->fileName length])] >= 1)
+    if ([regex numberOfMatchesInString:name options:matchingOptions range:NSMakeRange(0, [name length])] >= 1)
         resultNameType = YGFileNameTypeWithTimeStamp;
     
     nameType = resultNameType;
@@ -138,24 +137,24 @@
 
 -(void) defineFileType{
     
-    YGFileType resultType = YGFileTypePhotoNone;
+    YGFileType resultType = YGFileTypeNone;
     NSArray *photoExtensions = kPhotoExtensions;
     NSArray *videoExtensions = kVideoExtensions;
     NSArray *dependPhotoExtensions = kDependPhotoExtensions;
     
-    if([photoExtensions indexOfObject:fileExtension] != NSNotFound){
+    if([photoExtensions indexOfObject:extension] != NSNotFound){
         resultType = YGFileTypePhoto;
 
     }
-    else if([videoExtensions indexOfObject:fileExtension] != NSNotFound){
+    else if([videoExtensions indexOfObject:extension] != NSNotFound){
         resultType = YGFileTypeVideo;
 
     }
-    else if([dependPhotoExtensions indexOfObject:fileExtension] != NSNotFound){
-        NSString *photoFileName = [NSString stringWithFormat:@"%@", fileOnlyName];
+    else if([dependPhotoExtensions indexOfObject:extension] != NSNotFound){
+        NSString *photoFileName = [NSString stringWithFormat:@"%@", nameWithoutExtension];
         
         for (NSString *dependExtension in dependPhotoExtensions){
-            photoFileName = [NSString stringWithFormat:@"%@.%@", fileOnlyName, dependExtension];
+            photoFileName = [NSString stringWithFormat:@"%@.%@", nameWithoutExtension, dependExtension];
             NSFileManager *fm = [NSFileManager defaultManager];
             if([fm fileExistsAtPath:photoFileName]){
                 resultType = YGFileTypePhotoDepend;
@@ -174,11 +173,10 @@
     CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)URL, NULL); // 1
     if (source){
         
-        NSDictionary *props = (NSDictionary*) CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL)); // 2
+        NSDictionary *props = (NSDictionary*) CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
         NSDictionary *exif = props[@"{Exif}"];
         
         NSString *dateSrcString = [NSString stringWithFormat:@"%@", exif[@"DateTimeOriginal"]];
-        //NSLog(@"src string: %@", dateSrcString);
         NSDateFormatter *formatterFromSrc = [[NSDateFormatter alloc] init];
         [formatterFromSrc setDateFormat:@"yyyy:MM:dd HH:mm:ss"]; //2013:06:15 18:38:33
         
@@ -187,9 +185,36 @@
         [formaterToDst setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
         NSString *dateDstString = [formaterToDst stringFromDate:date];
         
-        resultName = [NSString stringWithFormat:@"%@_%@", dateDstString, fileName];
+        resultName = [NSString stringWithFormat:@"%@_%@", dateDstString, name];
+        
     }
     
+    return resultName;
+}
+
+-(NSString *)makeTimestampNameFromMainFile{
+#ifdef FUNC_DEBUG
+#undef FUNC_DEBUG
+#endif
+    
+    NSString *resultName = @"";
+    NSString *baseName = [[NSString stringWithFormat:@"%@", name] stringByDeletingPathExtension];
+    NSArray *photoExtensions = kPhotoExtensions;
+        
+    for(NSString *ext in photoExtensions){
+        NSString *mainFileName = [NSString stringWithFormat:@"%@.%@", baseName, ext];
+#ifdef FUNC_DEBUG
+        printf("\nTrying photo name: %s", [mainFileName cStringUsingEncoding:NSUTF8StringEncoding]);
+#endif
+        YGFile *file = [[YGFile alloc] initWithFileName:mainFileName];
+        if(file.isExistOnDisk){
+            resultName = [NSString stringWithFormat:@"%@.%@", [[file makeTimestampName] stringByDeletingPathExtension], extension];
+            break;
+        }
+    }
+#ifdef FUNC_DEBUG
+    printf("\nResult name from photo file: %s", [resultName cStringUsingEncoding:NSUTF8StringEncoding]);
+#endif
     return resultName;
 }
 
@@ -204,18 +229,16 @@
     NSError *error = nil;
     NSFileManager *fm = [NSFileManager defaultManager];
     
-    // проверяем системным методом
+    // check for same contents by system funcion
     if([fm contentsEqualAtPath:self->fullName andPath:otherFile->fullName])
         resultCheck = YES;
     
-    // проверяем размер
+    // check for same size
     NSDictionary *attributes = [fm attributesOfItemAtPath:[URL path] error:&error];
     NSUInteger fileSize = [[attributes objectForKey:NSFileSize] unsignedIntegerValue];
     
     NSDictionary *attributesOther = [fm attributesOfItemAtPath:[otherFile.URL path] error:&error];
     NSUInteger fileSizeOther = [[attributesOther objectForKey:NSFileSize] unsignedIntegerValue];
-    
-    // check for error?
     
     if(fileSize == fileSizeOther){
 #ifdef FUNC_DEBUG
@@ -229,15 +252,7 @@
         
     }
     
-    for(NSObject *obj in attributes){
-        NSLog(@"obj: %@ - %@", obj, [obj description]);
-    }
-    
-    
-    // проверяем CRC
-    
-    // what else?
-    
+    // check for same SRS
     
     return resultCheck;
 }

@@ -26,12 +26,15 @@
             if(!isDir){
                 YGFile *file = [[YGFile alloc] initWithFileName:fileName];
                 if(file != nil){
-                    [resultFiles addObject:file];
-                    //printf("\n%s", [[file fileInfo] cStringUsingEncoding:NSUTF8StringEncoding]);
+                    // files dependend from photo like .AAE must process first
+                    if(file.type == YGFileTypePhotoDepend)
+                        [resultFiles insertObject:file atIndex:0];
+                    else
+                        [resultFiles addObject:file];
                 }
             }
         }
-    }
+    } // while
     
     return [resultFiles mutableCopy];
 }
