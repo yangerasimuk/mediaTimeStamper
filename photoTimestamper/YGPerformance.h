@@ -10,6 +10,7 @@
 
 @interface YGPerformance : NSObject
 
+//
 +(NSString *)timeExecutingFrom:(NSDate *)start to:(NSDate *)finish;
 
 @end

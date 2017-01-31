@@ -15,8 +15,8 @@
 #import "YGPerformance.h"
 #import "globals.h"
 
-#define kAppVersion "0.3"
-#define kAppBildDate "31 january 2017"
+#define kAppVersion "0.4"
+#define kAppBildDate "1 february 2017"
 
 int main(int argc, const char * argv[]) {
 #ifdef FUNC_DEBUG

@@ -16,14 +16,19 @@
 
 @property NSString *baseName;
 
+//
 -(YGFileTuple *)initWithName:(NSString *)name;
 
+//
 -(YGFileTuple *)initWithName:(NSString *)name andItems:(NSArray *)items;
 
+//
 -(BOOL)addFile:(YGFile *)file;
 
+//
 -(BOOL)timeStamp;
 
+//
 -(NSString *)info;
 
 @end

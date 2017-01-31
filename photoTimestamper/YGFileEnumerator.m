@@ -8,7 +8,6 @@
 
 #import "YGFileEnumerator.h"
 
-
 @implementation YGFileEnumerator
 
 +(NSArray <YGFileTuple *>*)generateFileTuples:(NSArray <YGFile *>*)files{
@@ -27,8 +26,6 @@
         printf("\n\t...%s", [file.name cStringUsingEncoding:NSUTF8StringEncoding]);
         printf("\n\t...%s", [file.baseName cStringUsingEncoding:NSUTF8StringEncoding]);
         printf("\n\t...%s", [[file description] cStringUsingEncoding:NSUTF8StringEncoding]);
-        
-        
 #endif
         
         if([tuples objectForKey:file.baseName] == nil){
@@ -38,7 +35,6 @@
             NSArray *arr = [[NSArray alloc] initWithObjects:file, nil];
             //YGFileTuple *tuple = [[YGFileTuple alloc] initWithName:file.baseName andItems:@[file]];
             YGFileTuple *tuple = [[YGFileTuple alloc] initWithName:file.baseName andItems:arr];
-            printf("\n\t%s", [[tuple info] cStringUsingEncoding:NSUTF8StringEncoding]);
             [tuples setObject:tuple forKey:file.baseName];
 #ifdef FUNC_DEBUG
             printf("\n\tTuples count: %ld", [tuples count]);
@@ -101,5 +97,5 @@
     
     return [resultFiles mutableCopy];
 }
-
+ 
 @end

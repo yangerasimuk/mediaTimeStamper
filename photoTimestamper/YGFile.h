@@ -66,9 +66,6 @@ typedef enum YGFileNameType YGFileNameType;
 -(NSString *)makeTimestampName;
 
 //
-//-(NSString *)makeTimestampNameFromMainFile;
-
-//
 -(BOOL) isEqual:(YGFile *)otherFile;
 
 -(BOOL) isTheSame:(YGFile *)otherFile;

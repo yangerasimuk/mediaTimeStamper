@@ -11,7 +11,6 @@
 		1319B7BE1E3BA2CC00F36F34 /* YGFileEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 1319B7BD1E3BA2CC00F36F34 /* YGFileEnumerator.m */; };
 		1319B7C11E3BA87400F36F34 /* YGPerformance.m in Sources */ = {isa = PBXBuildFile; fileRef = 1319B7C01E3BA87400F36F34 /* YGPerformance.m */; };
 		1319B7C21E3BADBC00F36F34 /* photoTimestamper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13741E641E3B8DB700336264 /* photoTimestamper */; };
-		1319B7C51E3BBDDA00F36F34 /* YGFileRenamer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1319B7C41E3BBDDA00F36F34 /* YGFileRenamer.m */; };
 		13741E681E3B8DB700336264 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13741E671E3B8DB700336264 /* main.m */; };
 		13DDB41C1E407EFC003CA2DD /* YGFileTuple.m in Sources */ = {isa = PBXBuildFile; fileRef = 13DDB41B1E407EFC003CA2DD /* YGFileTuple.m */; };
 /* End PBXBuildFile section */
@@ -36,8 +35,6 @@
 		1319B7BD1E3BA2CC00F36F34 /* YGFileEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YGFileEnumerator.m; sourceTree = "<group>"; };
 		1319B7BF1E3BA87400F36F34 /* YGPerformance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGPerformance.h; sourceTree = "<group>"; };
 		1319B7C01E3BA87400F36F34 /* YGPerformance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YGPerformance.m; sourceTree = "<group>"; };
-		1319B7C31E3BBDDA00F36F34 /* YGFileRenamer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGFileRenamer.h; sourceTree = "<group>"; };
-		1319B7C41E3BBDDA00F36F34 /* YGFileRenamer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YGFileRenamer.m; sourceTree = "<group>"; };
 		13741E641E3B8DB700336264 /* photoTimestamper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = photoTimestamper; sourceTree = BUILT_PRODUCTS_DIR; };
 		13741E671E3B8DB700336264 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		13B3E1BF1E3E68F100882DC9 /* globals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
@@ -83,8 +80,6 @@
 				13DDB41B1E407EFC003CA2DD /* YGFileTuple.m */,
 				1319B7BC1E3BA2CC00F36F34 /* YGFileEnumerator.h */,
 				1319B7BD1E3BA2CC00F36F34 /* YGFileEnumerator.m */,
-				1319B7C31E3BBDDA00F36F34 /* YGFileRenamer.h */,
-				1319B7C41E3BBDDA00F36F34 /* YGFileRenamer.m */,
 				1319B7BF1E3BA87400F36F34 /* YGPerformance.h */,
 				1319B7C01E3BA87400F36F34 /* YGPerformance.m */,
 			);
@@ -152,7 +147,6 @@
 				1319B7C11E3BA87400F36F34 /* YGPerformance.m in Sources */,
 				1319B7BE1E3BA2CC00F36F34 /* YGFileEnumerator.m in Sources */,
 				13DDB41C1E407EFC003CA2DD /* YGFileTuple.m in Sources */,
-				1319B7C51E3BBDDA00F36F34 /* YGFileRenamer.m in Sources */,
 				13741E681E3B8DB700336264 /* main.m in Sources */,
 				1319B7BB1E3B91F600F36F34 /* YGFile.m in Sources */,
 			);

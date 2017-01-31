@@ -35,7 +35,6 @@
     
     extern BOOL isAppModeSilent;
     
-    BOOL resultFunc = NO;
     NSString *newBaseName = @"";
     
     // find main file

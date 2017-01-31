@@ -13,7 +13,10 @@
 
 @interface YGFileEnumerator : NSObject
 
+//
 +(NSArray <YGFile *>*)enumerateCurDir;
+
+//
 +(NSArray <YGFileTuple *>*)generateFileTuples:(NSArray <YGFile *>*)files;
 
 @end
