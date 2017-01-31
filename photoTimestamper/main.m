@@ -9,13 +9,14 @@
 #import <Foundation/Foundation.h>
 
 #import "YGFile.h"
+#import "YGFileTuple.h"
 #import "YGFileEnumerator.h"
 #import "YGFileRenamer.h"
 #import "YGPerformance.h"
 #import "globals.h"
 
-#define kAppVersion "0.2"
-#define kAppBildDate "29 january 2017"
+#define kAppVersion "0.3"
+#define kAppBildDate "31 january 2017"
 
 int main(int argc, const char * argv[]) {
 #ifdef FUNC_DEBUG
@@ -40,55 +41,16 @@ int main(int argc, const char * argv[]) {
         // File processing counter
         NSUInteger renamedFilesCount = 0;
         
-        NSArray *files = [[NSArray alloc] init];
+        NSArray <YGFile *>*files = [[NSArray alloc] init];
         files = [YGFileEnumerator enumerateCurDir];
         
-        for(YGFile *file in files){
-#ifdef FUNC_DEBUG
-            printf("\n%s", [[file description] cStringUsingEncoding:NSUTF8StringEncoding]);
-#endif
-            
-            if(file.type & (YGFileTypePhoto | YGFileTypePhotoDepend) && (file.nameType == YGFileNameTypeRaw)){
-                
-                if(file.type == YGFileTypePhoto && ![file isEXIFAvailible]){
-                    if(!isAppModeSilent){
-                        printf("\n%s - skip processing, EXIF info unavailible", [[file name] cStringUsingEncoding:NSUTF8StringEncoding]);
-                    }
-                    
-                    continue;
-                }
-                
-                NSString *newFileName = @"";
-                
-                if(file.type == YGFileTypePhotoDepend && file.nameType == YGFileNameTypeRaw)
-                    newFileName = [NSString stringWithFormat:@"%@", [file makeTimestampNameFromMainFile]];
-                else if(file.type == YGFileTypePhoto && file.nameType == YGFileNameTypeRaw)
-                    newFileName = [NSString stringWithFormat:@"%@", [file makeTimestampName]];
-                
-                if(newFileName != nil && [newFileName compare:@""] != NSOrderedSame){
-                    YGFile *newFile = [[YGFile alloc] initWithFileName:newFileName];
-                    
-                    if(!newFile.isExistOnDisk){
-                        if([YGFileRenamer copyFileFrom:file to:newFile]){
-                            if([newFile isEqual:file]){
-                                [YGFileRenamer removeFile:file];
-                                renamedFilesCount++;
-                                if(!isAppModeSilent)
-                                    printf("\n%s -> %s", [[file name] cStringUsingEncoding:NSUTF8StringEncoding], [[newFile name] cStringUsingEncoding:NSUTF8StringEncoding]);
-                            }
-                        }
-                    }
-                    else{
-                        if(!isAppModeSilent)
-                            printf("\n%s - skip processing, target file already exist on disk", [[file name] cStringUsingEncoding:NSUTF8StringEncoding]);
-                    }
-                }
-            } //if
-            else{
-                if(!isAppModeSilent)
-                    printf("\n%s - skip file", [[file name] cStringUsingEncoding:NSUTF8StringEncoding]);
-            }
-        } // for
+        // Generate collection - tuples with main and depend files over one base name
+        NSArray *tuples = [YGFileEnumerator generateFileTuples:files];
+        
+        for (YGFileTuple *tuple in tuples){
+            if([tuple timeStamp])
+                renamedFilesCount++;
+        }
         
         // Set finish timestamp
         NSDate *finishDate = [NSDate date];

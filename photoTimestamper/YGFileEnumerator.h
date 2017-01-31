@@ -9,9 +9,11 @@
 #import <Foundation/Foundation.h>
 
 #import "YGFile.h"
+#import "YGFileTuple.h"
 
 @interface YGFileEnumerator : NSObject
 
 +(NSArray <YGFile *>*)enumerateCurDir;
++(NSArray <YGFileTuple *>*)generateFileTuples:(NSArray <YGFile *>*)files;
 
 @end

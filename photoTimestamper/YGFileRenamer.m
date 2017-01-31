@@ -36,6 +36,7 @@
     return resultFunc;
 }
 
+
 +(BOOL) removeFile:(YGFile *)file{
 #ifdef FUNC_DEBUG
 #undef FUNC_DEBUG

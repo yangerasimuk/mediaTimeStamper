@@ -9,14 +9,15 @@
 #import <Foundation/Foundation.h>
 
 enum YGFileType {
-    YGFileTypeNone          = 0,
-    YGFileTypePhoto         = 1 << 0,
-    YGFileTypePhotoDepend   = 1 << 1,
-    YGFileTypeVideo         = 1 << 2
-
+    YGFileTypeNone                      = 0,
+    YGFileTypePhoto                     = 1 << 0,
+    YGFileTypeVideo                     = 1 << 1,
+    YGFileTypeDependByReplacementExt    = 1 << 2,
+    YGFileTypeDependByAddingExt         = 1 << 3
 };
 typedef enum YGFileType YGFileType;
 
+// Types of filename raw (without processing) and name with timestamp
 enum YGFileNameType {
     YGFileNameTypeRaw,
     YGFileNameTypeWithTimeStamp
@@ -25,23 +26,32 @@ typedef enum YGFileNameType YGFileNameType;
 
 @interface YGFile : NSObject {
     NSString *dir;
-    NSString *nameWithoutExtension;
-    NSString *extension;
+    NSString *extensionSecond;
     NSString *fullName;
 }
 
 @property NSString *name;
+@property NSString *baseName;
+@property NSString *extension;
 @property NSURL *URL;
 @property YGFileType type;
 @property YGFileNameType nameType;
 @property BOOL isExistOnDisk;
 
-
 // Init object by filename in current dir
--(YGFile *)initWithFileName:(NSString *)filename;
+-(YGFile *)initWithName:(NSString *)filename;
 
 // Init object by filename in specific dir
--(YGFile *)initWithFileName:(NSString *)filename andDir:(NSString *)filepath;
+-(YGFile *)initWithName:(NSString *)filename andDir:(NSString *)filepath;
+
+//
+-(YGFile *)initWithBaseName:(NSString *)baseName andExtension:(NSString *)extension;
+
+//
+-(BOOL) copyToFile:(YGFile *)targetFile;
+
+//
+-(BOOL) removeFromDisk;
 
 //
 -(NSString *)fileInfo;
@@ -56,12 +66,19 @@ typedef enum YGFileNameType YGFileNameType;
 -(NSString *)makeTimestampName;
 
 //
--(NSString *)makeTimestampNameFromMainFile;
+//-(NSString *)makeTimestampNameFromMainFile;
 
 //
 -(BOOL) isEqual:(YGFile *)otherFile;
 
+-(BOOL) isTheSame:(YGFile *)otherFile;
+
 // checking for EXIF info availible
 -(BOOL)isEXIFAvailible;
+
++(NSArray <NSString *>*)photoExtensions;
++(NSArray <NSString *>*)videoExtensions;
++(NSArray <NSString *>*)dependFileByAddingExtensions;
++(NSArray <NSString *>*)dependFileByReplacementExtensions;
 
 @end
