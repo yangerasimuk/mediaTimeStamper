@@ -13,4 +13,10 @@
 //
 +(NSString *)timeExecutingFrom:(NSDate *)start to:(NSDate *)finish;
 
+//
++(void)incrementRenamedSharedCounter;
+
+//
++(NSInteger)renamedSharedCounter;
+
 @end

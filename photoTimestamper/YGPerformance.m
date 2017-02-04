@@ -10,6 +10,20 @@
 
 @implementation YGPerformance
 
+static NSInteger renamedCount = 0;
+
++(void)incrementRenamedSharedCounter{
+    @synchronized (self) {
+        renamedCount++;
+    }
+}
+
++(NSInteger)renamedSharedCounter{
+    @synchronized (self) {
+        return renamedCount;
+    }
+}
+
 /*
   
  Info: https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/DatesAndTimes/Articles/dtCalendricalCalculations.html#//apple_ref/doc/uid/TP40007836-SW1

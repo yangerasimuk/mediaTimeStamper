@@ -26,7 +26,7 @@
 -(BOOL)addFile:(YGFile *)file;
 
 //
--(BOOL)timeStamp;
+-(void)timeStamp;
 
 //
 -(NSString *)info;

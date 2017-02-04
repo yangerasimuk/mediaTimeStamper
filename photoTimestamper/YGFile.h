@@ -48,10 +48,10 @@ typedef enum YGFileNameType YGFileNameType;
 -(YGFile *)initWithBaseName:(NSString *)baseName andExtension:(NSString *)extension;
 
 //
--(BOOL) copyToFile:(YGFile *)targetFile;
+-(void) copyToFile:(YGFile *)targetFile;
 
 //
--(BOOL) removeFromDisk;
+-(void) removeFromDisk;
 
 //
 -(NSString *)fileInfo;
@@ -63,12 +63,12 @@ typedef enum YGFileNameType YGFileNameType;
 -(NSUInteger) crcOfFile;
 
 //
--(NSString *)makeTimestampName;
+-(NSString *)makeTimestampNameFromEXIF;
+-(NSString *)makeTimestampNameFromAttributes;
+-(NSString *)makeTimestampNameFromYTags;
 
 //
 -(BOOL) isEqual:(YGFile *)otherFile;
-
--(BOOL) isTheSame:(YGFile *)otherFile;
 
 // checking for EXIF info availible
 -(BOOL)isEXIFAvailible;
