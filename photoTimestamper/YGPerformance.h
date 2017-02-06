@@ -19,4 +19,13 @@
 //
 +(NSInteger)renamedSharedCounter;
 
+//
++(void)addSizeOfProcessedFile:(NSInteger)size;
+
+//
++(NSString *)sizeOfProcessedFilesInHumanStyle;
+
+//
++(NSInteger)sizeOfProcessedFiles;
+
 @end

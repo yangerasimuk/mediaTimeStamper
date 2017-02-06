@@ -11,13 +11,55 @@
 @implementation YGPerformance
 
 static NSInteger renamedCount = 0;
+static NSUInteger sizeOfFilesInBytes = 0;
 
+//
++(void)addSizeOfProcessedFile:(NSInteger) sizeOfFile{
+    @synchronized (self) {
+        sizeOfFilesInBytes += sizeOfFile;
+    }
+}
+
+//
++(NSInteger)sizeOfProcessedFiles{
+    @synchronized (self) {
+        return sizeOfFilesInBytes;
+    }
+}
+
++(NSString *)sizeOfProcessedFilesInHumanStyle{
+    @synchronized (self) {
+        return [self transformBytesValueToHumanStyle:sizeOfFilesInBytes];
+    }
+}
+
+//
++(id)transformBytesValueToHumanStyle:(NSUInteger)value{
+    
+
+    //double convertedValue = [value doubleValue];
+    double convertedValue = [[[NSNumber alloc] initWithLong:(long)value] doubleValue];
+        
+    int multiplyFactor = 0;
+    
+    NSArray *tokens = @[@"bytes",@"KB",@"MB",@"GB",@"TB",@"PB",@"EB",@"ZB",@"YB"];
+    
+    while (convertedValue > 1024) {
+        convertedValue /= 1024;
+        multiplyFactor++;
+    }
+    
+    return [NSString stringWithFormat:@"%4.2f %@",convertedValue, tokens[multiplyFactor]];
+}
+
+//
 +(void)incrementRenamedSharedCounter{
     @synchronized (self) {
         renamedCount++;
     }
 }
 
+//
 +(NSInteger)renamedSharedCounter{
     @synchronized (self) {
         return renamedCount;

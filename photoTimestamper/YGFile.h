@@ -45,7 +45,7 @@ typedef enum YGFileNameType YGFileNameType;
 -(YGFile *)initWithName:(NSString *)filename andDir:(NSString *)filepath;
 
 //
--(YGFile *)initWithBaseName:(NSString *)baseName andExtension:(NSString *)extension;
+//-(YGFile *)initWithBaseName:(NSString *)baseName andExtension:(NSString *)extension;
 
 //
 -(void) copyToFile:(YGFile *)targetFile;
@@ -56,8 +56,10 @@ typedef enum YGFileNameType YGFileNameType;
 //
 -(NSString *)fileInfo;
 
+-(NSInteger)size;
+
 //
--(NSUInteger) sizeOfFileInBytes;
+//-(NSUInteger) sizeOfFileInBytes;
 
 //
 -(NSUInteger) crcOfFile;
@@ -72,6 +74,8 @@ typedef enum YGFileNameType YGFileNameType;
 
 // checking for EXIF info availible
 -(BOOL)isEXIFAvailible;
+
++(NSString *)currentDirectory;
 
 +(NSArray <NSString *>*)photoExtensions;
 +(NSArray <NSString *>*)videoExtensions;

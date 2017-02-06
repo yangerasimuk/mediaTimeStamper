@@ -64,7 +64,7 @@
         }
     } // while
     
-    return [resultFiles mutableCopy];
+    return [resultFiles copy];
 }
  
 @end

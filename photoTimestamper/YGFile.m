@@ -15,7 +15,7 @@
 #define kVideoExtensions @[@"mov",@"MOV",@"mpeg",@"MPEG",@"mp4",@"MP4"]
 
 // Permissible extension for files depend to photo files
-#define kDependFilesByReplacementExtensions @[@"AAE"]
+#define kDependFilesByReplacementExtensions @[@"aae",@"AAE"]
 
 // Permissible second extension for files depend to any files
 #define kDependFilesByAddingExtensions @[@"ytags",@"YTAGS"]
@@ -33,7 +33,20 @@
 
 @implementation YGFile
 
+static NSUInteger count = 0;
+static NSString *curDir = nil;
+
 @synthesize name, extension, baseName, URL, type, nameType, isExistOnDisk;
+
++(NSString *)currentDirectory{
+    @synchronized (self) {
+        if(!curDir){
+            NSFileManager *fm = [NSFileManager defaultManager];
+            curDir = [NSString stringWithFormat:@"%@", [fm currentDirectoryPath]];
+        }
+        return curDir;
+    }
+}
 
 -(NSString *)description{
     return [NSString stringWithFormat:@"%@ - %@ - %@", fullName, [self nameOfFileType], [self nameOfFileNameType]];
@@ -44,10 +57,12 @@
     return [self initWithName:filename andDir:nil];
 }
 
+/*
 -(YGFile *)initWithBaseName:(NSString *)baseName andExtension:(NSString *)extension{
     NSString *filename = [NSString stringWithFormat:@"%@.%@", baseName, extension];
     return [self initWithName:filename];
 }
+ */
 
 // Init object by filename in specific dir
 -(YGFile *)initWithName:(NSString *)filename andDir:(NSString *)filepath{
@@ -56,17 +71,20 @@
         if([super init]){
             
             if([dir isEqualTo:nil] || [dir compare:@""] == NSOrderedSame){
-                NSFileManager *fm = [NSFileManager defaultManager];
-                self->dir = [fm currentDirectoryPath];
+                dir = [YGFile currentDirectory];
+                count++;
             }
             else{
-                self->dir = [filepath copy];
+                dir = [filepath copy];
+            }
+            
+            if(!dir || [dir compare:@"(null)"] == NSOrderedSame || [dir compare:@""] == NSOrderedSame){
+                @throw [NSException exceptionWithName:@"-[YTFile initWihtName:andDir:]->" reason:[NSString stringWithFormat:@"Error in -[YTFile initWihtName:andDir:]. Dir can not be nil or empty. File, name: %@, dir: %@. Count: %ld", filename, dir, (long)count] userInfo:nil];
             }
             
             name = [filename copy];
-            //self->nameWithoutExtension = [name stringByDeletingPathExtension];
             extension = [name pathExtension];
-            self->fullName = [NSString stringWithFormat:@"%@/%@", self->dir, name];
+            fullName = [NSString stringWithFormat:@"%@/%@", self->dir, name];
             URL = [NSURL fileURLWithPath:self->fullName];
             
             [self defineFileType];
@@ -117,6 +135,21 @@
     resultInfo = [NSString stringWithFormat:@"%@ - %@", fullName, [self nameOfFileType]];
     
     return resultInfo;
+}
+
+-(NSInteger)size{
+    
+    NSInteger resultSize = 0;
+    NSError *error = nil;
+    NSDictionary *attributes = [[NSDictionary alloc] init];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    attributes = [fm attributesOfItemAtPath:[self name] error:&error];
+    
+    if(attributes){
+        resultSize = [attributes[@"NSFileSize"] integerValue];
+    }
+    
+    return resultSize;
 }
 
 -(NSString *) nameOfFileType{
@@ -211,13 +244,6 @@
  Q: We have additional files by replacing extensions for photo-files, ex - IMG_0115.AAE for IMG_0115.JPG. But do we have same files for video?
  */
 -(void) defineFileType{
-#ifdef FUNC_DEBUG
-#undef FUNC_DEBUG
-#endif
-    
-#ifdef FUNC_DEBUG
-    printf("\n-[YGFile defineFileType]...");
-#endif
 
     YGFileType resultType = YGFileTypeNone;
     NSArray *photoExtensions = [YGFile photoExtensions];
@@ -253,9 +279,6 @@
     }
     
     type = resultType;
-#ifdef FUNC_DEBUG
-    printf("\n\t%s - %s", [name cStringUsingEncoding:NSUTF8StringEncoding], [[self nameOfFileType] cStringUsingEncoding:NSUTF8StringEncoding]);
-#endif
 }
 
 -(NSString *)makeTimestampNameFromYTags{
@@ -359,6 +382,10 @@
         if (source){
             
             NSDictionary *props = (NSDictionary*) CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
+            
+            // Free Core Foundation obj
+            CFRelease(source);
+            
             NSDictionary *exif = props[@"{Exif}"];
             
             if(exif == nil || [exif count] == 0){
@@ -396,6 +423,7 @@
                                                reason:@"Can not make result name with timestamp and base name of file"
                                              userInfo:nil];
             }
+            
         }
         else{
             @throw [NSException exceptionWithName:@"-[YGFile makeTimestampNameFromEXIF]->"
@@ -421,31 +449,38 @@
  */
 -(BOOL) isEqual:(YGFile *)otherFile{
     
-    // compare with nil
-    if(otherFile == nil)
-        return NO;
-    
-    // check for same contents by system funcion
-    NSError *error = nil;
-    NSFileManager *fm = [NSFileManager defaultManager];
-    if(![fm contentsEqualAtPath:self->fullName andPath:otherFile->fullName])
-        return NO;
-    
-    // check for same size
-    NSDictionary *attributes = [fm attributesOfItemAtPath:[URL path] error:&error];
-    NSUInteger fileSize = [[attributes objectForKey:NSFileSize] unsignedIntegerValue];
-    NSDictionary *attributesOther = [fm attributesOfItemAtPath:[otherFile.URL path] error:&error];
-    NSUInteger fileSizeOther = [[attributesOther objectForKey:NSFileSize] unsignedIntegerValue];
-    if(fileSize != fileSizeOther)
-        return NO;
-    
-    // check for same SRS
-    
-    // Crutch
-    if([self.extension compare:otherFile.extension] != NSOrderedSame)
-        return NO;
-
-    return YES;
+    @try{
+        // compare with nil
+        if(otherFile == nil)
+            return NO;
+        
+        // check for same contents by system funcion
+        NSError *error = nil;
+        NSFileManager *fm = [NSFileManager defaultManager];
+        if(![fm contentsEqualAtPath:self->fullName andPath:otherFile->fullName])
+            return NO;
+        
+        // check for same size
+        NSDictionary *attributes = [fm attributesOfItemAtPath:[URL path] error:&error];
+        NSUInteger fileSize = [[attributes objectForKey:NSFileSize] unsignedIntegerValue];
+        NSDictionary *attributesOther = [fm attributesOfItemAtPath:[otherFile.URL path] error:&error];
+        NSUInteger fileSizeOther = [[attributesOther objectForKey:NSFileSize] unsignedIntegerValue];
+        if(fileSize != fileSizeOther)
+            return NO;
+        
+        // check for same SRS
+        
+        // Crutch
+        if([self.extension compare:otherFile.extension] != NSOrderedSame)
+            return NO;
+        
+        return YES;
+        
+    }
+    @catch(NSException *ex){
+        printf("\nException in -[YGFile isEqual:]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
+        @throw;
+    }
 }
 
 
@@ -462,6 +497,9 @@
         if (source){
             
             NSDictionary *props = (NSDictionary*) CFBridgingRelease(CGImageSourceCopyPropertiesAtIndex(source, 0, NULL));
+            
+            // Free Core Foundation obj
+            CFRelease(source);
             
             NSDictionary *exif = props[@"{Exif}"];
             
@@ -486,6 +524,7 @@
                && [dateDstString length] == 19)
                 return YES;
         }
+        
     }
     @catch(NSException *ex){
         printf("\nException in -[YGFile isEXIFAvailible]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -503,20 +542,13 @@
     @try{
         NSFileManager *fm = [NSFileManager defaultManager];
         
-        if(![fm copyItemAtURL:URL toURL:newFile.URL error:&error]){
+        if(![fm copyItemAtURL:URL toURL:newFile.URL error:&error])
             @throw [NSException exceptionWithName:@"-[YGFile copyToFile]->"
-                                           reason:[NSString stringWithFormat:@"Error in [NSFileManager copyItemAtURL:toURL:error:]"]
-                                         userInfo:nil];
-            
-        }
-        
-        if(error != nil)
-            @throw [NSException exceptionWithName:@"-[YGFile copyToFile]->"
-                                           reason:[NSString stringWithFormat:@"Error in copying file. Error: %@", [error description]]
+                                           reason:[NSString stringWithFormat:@"+[NSFileManager copyItemAtURL:toURL:error:] return NO. Error: %@. File: %@", [error description], name]
                                          userInfo:nil];
     }
     @catch(NSException *ex){
-        printf("\nException in [YGFile copyToFile]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
+        printf("\nException in [YGFile copyToFile]. Exception: %s. File: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding], [name cStringUsingEncoding:NSUTF8StringEncoding]);
         @throw;
     }
 }
@@ -524,28 +556,24 @@
 -(void) removeFromDisk{
     
     extern BOOL isAppModeSilent;
+    
     NSError *error = nil;
     
     @try{
         NSFileManager *fm = [NSFileManager defaultManager];
         
-        if([fm removeItemAtURL:URL error:&error]){
-            if(error != nil){
-                @throw [NSException exceptionWithName:@"-[YGFile removeFromDisk]->"
-                                               reason:[NSString stringWithFormat:@"Error in removing file. Error: %@", [error description]]
-                                             userInfo:nil];
-            }
-            if(!isAppModeSilent)
-                printf("\n%s - removed from disk", [self.name cStringUsingEncoding:NSUTF8StringEncoding]);
-        }
-        else{
-            @throw [NSException exceptionWithName:@"-[YGFile removeFromDisk]->"
-                                           reason:[NSString stringWithFormat:@"Error in [NSFileManager removeItemAtURL:error:]"]
-                                         userInfo:nil];
+        if(![fm removeItemAtURL:URL error:&error]){
             if(!isAppModeSilent)
                 printf("\n%s - can not remove old file", [name cStringUsingEncoding:NSUTF8StringEncoding]);
+
+            @throw [NSException exceptionWithName:@"-[YGFile removeFromDisk]->"
+                                               reason:[NSString stringWithFormat:@"Error in removing file. Error: %@", [error description]]
+                                             userInfo:nil];
         }
-        
+        else{
+            if(!isAppModeSilent)
+                printf("\n%s - removed from disk", [name cStringUsingEncoding:NSUTF8StringEncoding]);
+        }
     }
     @catch(NSException *ex){
         printf("\nException in [YGFile removeFromDisk]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);

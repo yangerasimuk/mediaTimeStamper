@@ -71,6 +71,8 @@
     extern BOOL isAppModeProcessFilesWithoutMeta;
     extern BOOL isAppModeTest;
     
+    NSString *lastOperationInfo = @"";
+    
     @try{
         NSString *newBaseName = [self getTimestampedBaseName];
         
@@ -79,6 +81,8 @@
             NSString *newName = [oldFile.name stringByReplacingOccurrencesOfString:oldBaseName withString:newBaseName];
             
             YGFile *newFile = [[YGFile alloc] initWithName:newName];
+            
+            lastOperationInfo = [NSString stringWithFormat:@"Old file: %@ -> new file: %@", [oldFile description], [newFile description]];
             
             if(!newFile.isExistOnDisk){
                 [oldFile copyToFile:newFile];
@@ -95,6 +99,7 @@
         
                 // ++
                 [YGPerformance incrementRenamedSharedCounter];
+                [YGPerformance addSizeOfProcessedFile:[newFile size]];
             }
             else{
                 if(!isAppModeSilent)
@@ -103,7 +108,7 @@
         }
     }
     @catch(NSException *ex){
-        printf("\nException in [YGFile timeStamp]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
+        printf("\nException in [YGFile timeStamp]. Exception: %s. Last operation: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding], [lastOperationInfo cStringUsingEncoding:NSUTF8StringEncoding]);
         @throw;
     }
 }
