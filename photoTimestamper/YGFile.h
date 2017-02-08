@@ -17,7 +17,7 @@ enum YGFileType {
 };
 typedef enum YGFileType YGFileType;
 
-// Types of filename raw (without processing) and name with timestamp
+// Types of filename: raw, without processing - IMG_9754.JPG, and with timestamp - 2017-01-02_18-20-56_IMG_9754.JPG
 enum YGFileNameType {
     YGFileNameTypeRaw,
     YGFileNameTypeWithTimeStamp
@@ -36,47 +36,43 @@ typedef enum YGFileNameType YGFileNameType;
 @property NSURL *URL;
 @property YGFileType type;
 @property YGFileNameType nameType;
+@property NSUInteger size;
 @property BOOL isExistOnDisk;
 
 // Init object by filename in current dir
 -(YGFile *)initWithName:(NSString *)filename;
 
-// Init object by filename in specific dir
+// Main init object by filename in specific dir
 -(YGFile *)initWithName:(NSString *)filename andDir:(NSString *)filepath;
 
-//
-//-(YGFile *)initWithBaseName:(NSString *)baseName andExtension:(NSString *)extension;
-
-//
--(void) copyToFile:(YGFile *)targetFile;
-
-//
--(void) removeFromDisk;
-
-//
--(NSString *)fileInfo;
-
--(NSInteger)size;
-
-//
-//-(NSUInteger) sizeOfFileInBytes;
-
-//
--(NSUInteger) crcOfFile;
-
-//
--(NSString *)makeTimestampNameFromEXIF;
--(NSString *)makeTimestampNameFromAttributes;
--(NSString *)makeTimestampNameFromYTags;
-
-//
--(BOOL) isEqual:(YGFile *)otherFile;
-
-// checking for EXIF info availible
+// Checking for EXIF info availible
 -(BOOL)isEXIFAvailible;
 
+// Make timestamp name from EXIF
+-(NSString *)makeTimestampNameFromEXIF;
+
+// Make timestamp name from file attributes
+-(NSString *)makeTimestampNameFromAttributes;
+
+// [reserved] Make timestamp name from YTags file
+-(NSString *)makeTimestampNameFromYTags;
+
+// Copy current instance to target file
+-(void) copyToFile:(YGFile *)targetFile;
+
+// Remove current instance from disk
+-(void) removeFromDisk;
+
+// Update info for new copied file - flag isExistOnDisk = true and set file size
+-(void) updateFileInfo;
+
+// Is current instance equal other YGFile *file?
+-(BOOL) isEqual:(YGFile *)otherFile;
+
+// Singleton for getting current directory
 +(NSString *)currentDirectory;
 
+// Singletons for db of extensions
 +(NSArray <NSString *>*)photoExtensions;
 +(NSArray <NSString *>*)videoExtensions;
 +(NSArray <NSString *>*)dependFileByAddingExtensions;

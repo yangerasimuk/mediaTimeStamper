@@ -10,25 +10,20 @@
 
 #import "YGFile.h"
 
-@interface YGFileTuple : NSObject {
-    NSMutableArray <YGFile *>*files;
-}
+@interface YGFileTuple : NSObject
 
 @property NSString *baseName;
 
-//
--(YGFileTuple *)initWithName:(NSString *)name;
-
-//
+// Main init
 -(YGFileTuple *)initWithName:(NSString *)name andItems:(NSArray *)items;
 
-//
--(BOOL)addFile:(YGFile *)file;
+// Init new tuple, with default items == nil
+-(YGFileTuple *)initWithName:(NSString *)name;
 
-//
+// Add new file to existing tuple
+-(void)addFile:(YGFile *)file;
+
+// Rename all files in tuple with timestamped base name
 -(void)timeStamp;
-
-//
--(NSString *)info;
 
 @end

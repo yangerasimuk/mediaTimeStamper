@@ -8,36 +8,40 @@
 
 #import "YGPerformance.h"
 
+@interface YGPerformance()
++(NSString *)transformBytesValueToHumanStyle:(NSUInteger)value;
+@end
+    
 @implementation YGPerformance
 
-static NSInteger renamedCount = 0;
+static NSUInteger renamedCount = 0;
 static NSUInteger sizeOfFilesInBytes = 0;
 
-//
-+(void)addSizeOfProcessedFile:(NSInteger) sizeOfFile{
+// Add size of all renamed files
++(void)addSizeOfProcessedFile:(NSUInteger) sizeOfFile{
     @synchronized (self) {
         sizeOfFilesInBytes += sizeOfFile;
     }
 }
 
-//
-+(NSInteger)sizeOfProcessedFiles{
+
+// Value of all renamed files
++(NSUInteger)sizeOfProcessedFiles{
     @synchronized (self) {
         return sizeOfFilesInBytes;
     }
 }
 
+// Value of all renamed files, formatted in human style
 +(NSString *)sizeOfProcessedFilesInHumanStyle{
     @synchronized (self) {
         return [self transformBytesValueToHumanStyle:sizeOfFilesInBytes];
     }
 }
 
-//
-+(id)transformBytesValueToHumanStyle:(NSUInteger)value{
+// String with size of renamed files, formatted in human size
++(NSString *)transformBytesValueToHumanStyle:(NSUInteger)value{
     
-
-    //double convertedValue = [value doubleValue];
     double convertedValue = [[[NSNumber alloc] initWithLong:(long)value] doubleValue];
         
     int multiplyFactor = 0;
@@ -52,24 +56,24 @@ static NSUInteger sizeOfFilesInBytes = 0;
     return [NSString stringWithFormat:@"%4.2f %@",convertedValue, tokens[multiplyFactor]];
 }
 
-//
+
+// Increment counter of renamed files
 +(void)incrementRenamedSharedCounter{
     @synchronized (self) {
         renamedCount++;
     }
 }
 
-//
-+(NSInteger)renamedSharedCounter{
+
+// Value of counter of renamed files
++(NSUInteger)renamedSharedCounter{
     @synchronized (self) {
         return renamedCount;
     }
 }
 
-/*
-  
- Info: https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/DatesAndTimes/Articles/dtCalendricalCalculations.html#//apple_ref/doc/uid/TP40007836-SW1
- */
+
+// Time of execution of app, formatted in human style. Need start and finish dates.
 +(NSString *)timeExecutingFrom:(NSDate *)start to:(NSDate *)finish{
     
     NSMutableString *resultTime = [[NSMutableString alloc] init];

@@ -14,10 +14,13 @@
 #import "YGPerformance.h"
 #import "globals.h"
 
-#define kAppVersion "0.5"
-#define kAppBildDate "6 february 2017"
+#define kAppVersion "0.7"
+#define kAppBildDate "February 8, 2017"
 
+// Process command line of app, to set app mode
 void processArgs(int argc, const char * argv[]);
+
+// Handler for all exceptions
 void handleUncaughtException(NSException *exception);
 
 int main(int argc, const char * argv[]) {
@@ -25,13 +28,12 @@ int main(int argc, const char * argv[]) {
     @autoreleasepool {
 
         // Info
-        printf("\nfileTimeStamper. v%s, %s. @Yan Gerasimuk", kAppVersion, kAppBildDate);
+        printf("\nmediaTimeStamper. v%s, %s. @Yan Gerasimuk", kAppVersion, kAppBildDate);
 
         // Set app working modes
         processArgs(argc, argv);
         
         // Set own function to handle uncaught exceptions
-        // Attention! Do not work!!!
         NSSetUncaughtExceptionHandler(handleUncaughtException);
         
         // Set start timestamp
@@ -46,9 +48,9 @@ int main(int argc, const char * argv[]) {
             
             for (YGFileTuple *tuple in tuples)
                 [tuple timeStamp];
-            
-            printf("\nEnumerated for rename: %ld and renamed: %ld files", [files count], [YGPerformance renamedSharedCounter]);
-            printf("\nSize of renamed files: %s (=%ld B)", [[YGPerformance sizeOfProcessedFilesInHumanStyle] cStringUsingEncoding:NSUTF8StringEncoding], [YGPerformance sizeOfProcessedFiles]);
+                
+                printf("\nEnumerated for rename: %ld and renamed: %ld files", [files count], [YGPerformance renamedSharedCounter]);
+                printf("\nSize of renamed files: %s (=%ld B)", [[YGPerformance sizeOfProcessedFilesInHumanStyle] cStringUsingEncoding:NSUTF8StringEncoding], [YGPerformance sizeOfProcessedFiles]);
         }
         else{
             printf("\nNo files for processing");
@@ -64,28 +66,26 @@ int main(int argc, const char * argv[]) {
     return 0;
 }
 
+/*
+ Process command line of app, to set app mode
+ */
 void processArgs(int argc, const char * argv[]){
     // defaults
     isAppModeSilent = YES;
-    isAppModeProcessFilesWithoutMeta = YES;
     isAppModeTest = NO;
     
     for(int i = 1; i < argc; i++){
+        
         if(argv[i][1] == '-'){  // --info --metaonly
-            if(strcmp(argv[i], "--info"))
+            if(!strcmp(argv[i], "--info"))
                 isAppModeSilent = NO;
-            else if(strcmp(argv[i], "--metaonly"))
-                isAppModeProcessFilesWithoutMeta = NO;
-            else if(strcmp(argv[i], "--test"))
+            else if(!strcmp(argv[i], "--test"))
                 isAppModeTest = YES;
-
         }
-        else{                   // -im
+        else{                   // -imt
             for(int j = 1; j < strlen(argv[i]); j++){
                 if(argv[i][j] == 'i')
                     isAppModeSilent = NO;
-                else if(argv[i][j] == 'm')
-                    isAppModeProcessFilesWithoutMeta = NO;
                 else if(argv[i][j] == 't')
                     isAppModeTest = YES;
             }
@@ -93,6 +93,9 @@ void processArgs(int argc, const char * argv[]){
     } // for
 }
 
+/*
+ Handler for all exceptions
+ */
 void handleUncaughtException(NSException *exception){
     printf("\nUncaught earlier exception in main(). Exception: %s\n\n", [[exception description] cStringUsingEncoding:NSUTF8StringEncoding]);
     exit(EXIT_FAILURE);

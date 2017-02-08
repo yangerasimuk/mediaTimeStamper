@@ -10,22 +10,22 @@
 
 @interface YGPerformance : NSObject
 
-//
+// Time of execution of app, formatted in human style
 +(NSString *)timeExecutingFrom:(NSDate *)start to:(NSDate *)finish;
 
-//
+// Increment counter of renamed files
 +(void)incrementRenamedSharedCounter;
 
-//
-+(NSInteger)renamedSharedCounter;
+// Value of counter of renamed files
++(NSUInteger)renamedSharedCounter;
 
-//
-+(void)addSizeOfProcessedFile:(NSInteger)size;
+// Add size of all renamed files
++(void)addSizeOfProcessedFile:(NSUInteger)size;
 
-//
+// Value of all renamed files, formatted in human style
 +(NSString *)sizeOfProcessedFilesInHumanStyle;
 
-//
-+(NSInteger)sizeOfProcessedFiles;
+// Value of all renamed files
++(NSUInteger)sizeOfProcessedFiles;
 
 @end

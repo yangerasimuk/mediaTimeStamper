@@ -11,11 +11,6 @@
 // default - YES
 BOOL isAppModeSilent;
 
-// YES - rename files using file attributes
-// NO - ignore files without EXIF
-// default - NO
-BOOL isAppModeProcessFilesWithoutMeta;
-
 // YES - app working in test mode -> not delete old files for visual results
 // NO - real works, whithout test
 // default - NO

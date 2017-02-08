@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13741E631E3B8DB700336264"
-               BuildableName = "photoTimestamper"
+               BuildableName = "mtstamper"
                BlueprintName = "photoTimestamper"
                ReferencedContainer = "container:photoTimestamper.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13741E631E3B8DB700336264"
-            BuildableName = "photoTimestamper"
+            BuildableName = "mtstamper"
             BlueprintName = "photoTimestamper"
             ReferencedContainer = "container:photoTimestamper.xcodeproj">
          </BuildableReference>
@@ -56,7 +56,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13741E631E3B8DB700336264"
-            BuildableName = "photoTimestamper"
+            BuildableName = "mtstamper"
             BlueprintName = "photoTimestamper"
             ReferencedContainer = "container:photoTimestamper.xcodeproj">
          </BuildableReference>
@@ -75,7 +75,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13741E631E3B8DB700336264"
-            BuildableName = "photoTimestamper"
+            BuildableName = "mtstamper"
             BlueprintName = "photoTimestamper"
             ReferencedContainer = "container:photoTimestamper.xcodeproj">
          </BuildableReference>
