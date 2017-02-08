@@ -71,6 +71,9 @@ You know, it's difficult to say how quickly the program will process your mass d
 3. Photo: 4600, 6Gb. MacBook Pro with SSD. Time: 3 minutes.
 4. Photo: 1800, 6Gb. Macbook Pro with SSD and flash card SanDisk 64Gb/SDXC/10/3. Time: 18 minutes.
 
+####Processed files
+Program rename files with raw names and photo-extensions (.jpeg, .jpg, .png, .gif), video (.mov, .mpeg, .mp4, .avi) and depend (.aae, .ytags). Nothing else will be not processed.
+
 gl hf
 
 Yan Gerasimuk
