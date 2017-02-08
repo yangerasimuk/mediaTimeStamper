@@ -10,7 +10,7 @@
 		1319B7BB1E3B91F600F36F34 /* YGFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 1319B7BA1E3B91F600F36F34 /* YGFile.m */; };
 		1319B7BE1E3BA2CC00F36F34 /* YGFileEnumerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 1319B7BD1E3BA2CC00F36F34 /* YGFileEnumerator.m */; };
 		1319B7C11E3BA87400F36F34 /* YGPerformance.m in Sources */ = {isa = PBXBuildFile; fileRef = 1319B7C01E3BA87400F36F34 /* YGPerformance.m */; };
-		1319B7C21E3BADBC00F36F34 /* photoTimestamper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13741E641E3B8DB700336264 /* photoTimestamper */; };
+		1319B7C21E3BADBC00F36F34 /* ptstamper in CopyFiles */ = {isa = PBXBuildFile; fileRef = 13741E641E3B8DB700336264 /* ptstamper */; };
 		13741E681E3B8DB700336264 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13741E671E3B8DB700336264 /* main.m */; };
 		13DDB41C1E407EFC003CA2DD /* YGFileTuple.m in Sources */ = {isa = PBXBuildFile; fileRef = 13DDB41B1E407EFC003CA2DD /* YGFileTuple.m */; };
 /* End PBXBuildFile section */
@@ -22,7 +22,7 @@
 			dstPath = /usr/local/bin;
 			dstSubfolderSpec = 0;
 			files = (
-				1319B7C21E3BADBC00F36F34 /* photoTimestamper in CopyFiles */,
+				1319B7C21E3BADBC00F36F34 /* ptstamper in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -35,7 +35,7 @@
 		1319B7BD1E3BA2CC00F36F34 /* YGFileEnumerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YGFileEnumerator.m; sourceTree = "<group>"; };
 		1319B7BF1E3BA87400F36F34 /* YGPerformance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGPerformance.h; sourceTree = "<group>"; };
 		1319B7C01E3BA87400F36F34 /* YGPerformance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YGPerformance.m; sourceTree = "<group>"; };
-		13741E641E3B8DB700336264 /* photoTimestamper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = photoTimestamper; sourceTree = BUILT_PRODUCTS_DIR; };
+		13741E641E3B8DB700336264 /* ptstamper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ptstamper; sourceTree = BUILT_PRODUCTS_DIR; };
 		13741E671E3B8DB700336264 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		13B3E1BF1E3E68F100882DC9 /* globals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = globals.h; sourceTree = "<group>"; };
 		13DDB41A1E407EFC003CA2DD /* YGFileTuple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YGFileTuple.h; sourceTree = "<group>"; };
@@ -64,7 +64,7 @@
 		13741E651E3B8DB700336264 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13741E641E3B8DB700336264 /* photoTimestamper */,
+				13741E641E3B8DB700336264 /* ptstamper */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -103,7 +103,7 @@
 			);
 			name = photoTimestamper;
 			productName = photoTimestamper;
-			productReference = 13741E641E3B8DB700336264 /* photoTimestamper */;
+			productReference = 13741E641E3B8DB700336264 /* ptstamper */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -246,7 +246,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = EF64T58JW4;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = ptstamper;
 			};
 			name = Debug;
 		};
@@ -254,7 +254,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = EF64T58JW4;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = ptstamper;
 			};
 			name = Release;
 		};

@@ -7,155 +7,177 @@
 //
 
 #import "YGFileTuple.h"
+#import "YGPerformance.h"
 
-@implementation YGFileTuple
+@interface YGFileTuple()
+-(NSString *)getTimestampedBaseName;
+@end
+
+@implementation YGFileTuple {
+    NSMutableArray <YGFile *>*files;
+}
 
 @synthesize baseName;
 
--(NSString *)info{
-    NSMutableString *result = [[NSMutableString alloc] init];
 
-    [result appendFormat:@"Name: %@", baseName];
-    [result appendFormat:@" | %ld:", [files count]];
-    for(YGFile *f in files){
-        [result appendFormat:@" %@", f.name];
-    }
-    return [result copy];
-}
-
--(BOOL)timeStamp{
-#ifdef FUNC_DEBUG
-#undef FUNC_DEBUG
-#endif
-    
-#ifdef FUNC_DEBUG
-    printf("\n-[YGFileTuple timeStamp]...");
-    printf("\n%s", [[self info] cStringUsingEncoding:NSUTF8StringEncoding]);
-#endif
-    
-    extern BOOL isAppModeSilent;
-    
-    NSString *newBaseName = @"";
-    
-    // find main file
-    for(YGFile *f in files){
-        if(f.type == YGFileTypePhoto){
-#ifdef FUNC_DEBUG
-            printf("\n\t%s - base/main file", [f.name cStringUsingEncoding:NSUTF8StringEncoding]);
-#endif
-            if([f isEXIFAvailible]){
-                newBaseName = [NSString stringWithFormat:@"%@", [f makeTimestampName]];
-                
-            }
-            else{
-                // get dateTime from file attributes
-#ifdef FUNC_DEBUG
-                printf("\n%s -> skip, because EXIF meta-data unavailible", [[f name] cStringUsingEncoding:NSUTF8StringEncoding]);
-#endif
-            }
-            break;
-        }
-    }
-#ifdef FUNC_DEBUG
-    printf("\n\tbase name %s -> %s", [self.baseName cStringUsingEncoding:NSUTF8StringEncoding], [newBaseName cStringUsingEncoding:NSUTF8StringEncoding]);
-#endif
-    if([newBaseName compare:@""] == NSOrderedSame && newBaseName == nil){
-        return NO;
-    }
-
-    for (YGFile *f in files){
-        NSString *oldBaseName = [NSString stringWithFormat:@"%@", f.baseName];
-        NSString *newName = [f.name stringByReplacingOccurrencesOfString:oldBaseName withString:newBaseName];
-        
-        YGFile *newFile = [[YGFile alloc] initWithName:newName];
-        
-        if(!newFile.isExistOnDisk){
-            [f copyToFile:newFile];
-            if([newFile isTheSame:f]){
-                [f removeFromDisk];
-                if(!isAppModeSilent)
-                    printf("\n%s -> %s - OK", [[f name] cStringUsingEncoding:NSUTF8StringEncoding], [[newFile name] cStringUsingEncoding:NSUTF8StringEncoding]);
-            }
-            else{
-                if(!isAppModeSilent)
-                    printf("\n%s != %s", [[f name] cStringUsingEncoding:NSUTF8StringEncoding], [[newFile name] cStringUsingEncoding:NSUTF8StringEncoding]);
-            }
-        }
-        else{
-            if(!isAppModeSilent)
-                printf("\n%s - skip rename, because target file - '%s' exist on disk", [[f name] cStringUsingEncoding:NSUTF8StringEncoding], [[newFile name] cStringUsingEncoding:NSUTF8StringEncoding]);
-        }
-        
-     
-    }
-    return YES;
-}
-
--(NSString *)description{
-    NSMutableString *resultDesc = [[NSMutableString alloc] init];
-    [resultDesc appendFormat:@"Tuple name: %@", baseName];
-    
-    for(YGFile *file in files){
-        [resultDesc appendFormat:@"\n\tFile: %@", [file description]];
-    }
-    return [resultDesc copy];
-}
-
--(YGFileTuple *)initWithName:(NSString *)name{
-    return [self initWithName:name andItems:nil];
-}
-
+/*
+ Main init for file tuple.
+ Enter items in array may be NSString *filenames or YGFile *files.
+ */
 -(YGFileTuple *)initWithName:(NSString *)name andItems:(NSArray *)items{
-#ifdef FUNC_DEBUG
-#undef FUNC_DEBUG
-#endif
     
-#ifdef FUNC_DEBUG
-    printf("\n-[YGFileTuple intiWithName: andItems:]...");
-    printf("\n\tBase name: %s", [name cStringUsingEncoding:NSUTF8StringEncoding]);
-#endif
-
-    if([super init]){
-        baseName = name;
-        files = [[NSMutableArray alloc] init];
-        if(items){
-            if([items[0] isMemberOfClass:[YGFile class]])
-                files = [items mutableCopy];
-            else if([items[0] isMemberOfClass:[NSString class]]){
-                for(NSString *newName in items){
-                    YGFile *newFile = [[YGFile alloc] initWithName:newName];
-                    [files addObject:newFile];
+    @try{
+        if([super init]){
+            baseName = name;
+            files = [[NSMutableArray alloc] init];
+            if(items){
+                if([items[0] isMemberOfClass:[YGFile class]]){
+                    for(YGFile *file in items){ // files = [items mutableCopy];
+                        [files addObject:file];
+                    }
+                }
+                else if([items[0] isMemberOfClass:[NSString class]]){
+                    for(NSString *newName in items){
+                        YGFile *newFile = [[YGFile alloc] initWithName:newName];
+                        [files addObject:newFile];
+                    }
                 }
             }
         }
     }
-    return self;
+    @catch(NSException *ex){
+        printf("\nException in -[YGFileTuple initWithName:andItems:]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
+        @throw;
+    }
+    @finally{
+        return self;
+    }
 }
 
--(BOOL)addFile:(YGFile *)file{
-#ifdef FUNC_DEBUG
-#undef FUNC_DEBUG
-#endif
+
+/*
+ Init for tuple, without items
+ */
+-(YGFileTuple *)initWithName:(NSString *)name{
+    return [self initWithName:name andItems:nil];
+}
+
+
+/*
+ Override standart message for debug purposes.
+ */
+-(NSString *)description{
+    NSMutableString *resultDesc = [[NSMutableString alloc] init];
+    [resultDesc appendFormat:@"Tuple name: %@", baseName];
     
-#ifdef FUNC_DEBUG
-    printf("\n-[YGFileTuple intiWithName: andItems:]...");
-#endif
-    if(!files)
-        files = [[NSMutableArray alloc] init];
-    if([files indexOfObject:file] == NSNotFound){
-        [files addObject:file];
-#ifdef FUNC_DEBUG
-        printf("\nFile added to array");
-#endif
-        return YES;
+    if([files count] > 0)
+        [resultDesc appendFormat:@" | with %li files:", [files count]];
+    
+    for(YGFile *file in files)
+        [resultDesc appendFormat:@" %@", [file description]];
+    
+    return [resultDesc copy];
+}
 
+
+/*
+ Add files to existing tuple. If tuple with same base name exists, we don't need new one.
+ */
+-(void)addFile:(YGFile *)file{
+    
+    @try{
+        if([files indexOfObject:file] == NSNotFound)
+            [files addObject:file];
     }
-    else{
-#ifdef FUNC_DEBUG
-        printf("\nFile exist in array yet, adding cancel");
-#endif
-        return NO;
+    @catch(NSException *ex){
+        printf("\nException in -[YGFileTuple addFile:]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
+        @throw;
+    }
+}
 
+
+/*
+ Return timestamped base name for tuple, this name will be the same for all files in tuple.
+ */
+-(NSString *)getTimestampedBaseName{
+    
+    extern BOOL isAppModeSilent;
+    
+    NSString *resultName = @"";
+    
+    @try{
+        for(YGFile *f in files){
+            if(f.type == YGFileTypePhoto && [f isEXIFAvailible]){
+                resultName = [NSString stringWithFormat:@"%@", [f makeTimestampNameFromEXIF]];
+                break;
+            }
+            else if([resultName compare:@""] == NSOrderedSame)
+                resultName = [NSString stringWithFormat:@"%@", [f makeTimestampNameFromAttributes]];
+        }
+        
+        if([resultName isEqualTo:nil] || [resultName compare:@""] == NSOrderedSame || [resultName length] < 19){
+            @throw [NSException exceptionWithName:@"-[YGFile getTimestampedBaseName]->"
+                                           reason:@"Can not make result timestamped base name of tuple"
+                                         userInfo:nil];
+        }
+        
+    }
+    @catch(NSException *ex){
+        printf("\nException in [YGFile getTimestampedBaseName]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
+        @throw;
+    }
+    @finally{
+        return resultName;
+    }
+}
+
+
+/*
+ Rename each file in tuple by timestamped base name. If app work in test mode old file don't remove.
+ 
+ Q1: If new file don't equal old one, what to do? Now I'm simple don't remove old file. May be mark new file, some extention? .bak, .old?
+ */
+-(void)timeStamp{
+    
+    extern BOOL isAppModeSilent;
+    extern BOOL isAppModeTest;
+    
+    @try{
+        NSString *newBaseName = [self getTimestampedBaseName];
+        
+        for (YGFile *oldFile in files){
+            NSString *oldBaseName = [NSString stringWithFormat:@"%@", oldFile.baseName];
+            NSString *newName = [oldFile.name stringByReplacingOccurrencesOfString:oldBaseName withString:newBaseName];
+            
+            YGFile *newFile = [[YGFile alloc] initWithName:newName];
+            
+            if(!newFile.isExistOnDisk){
+                [oldFile copyToFile:newFile];
+                [newFile updateFileInfo];
+                if([oldFile isEqual:newFile]){
+                    if(!isAppModeTest)
+                        [oldFile removeFromDisk];
+                    if(!isAppModeSilent)
+                        printf("\n%s -> %s - OK", [[oldFile name] cStringUsingEncoding:NSUTF8StringEncoding], [[newFile name] cStringUsingEncoding:NSUTF8StringEncoding]);
+                }
+                else{
+                    if(!isAppModeSilent)
+                        printf("\n%s != %s", [[oldFile name] cStringUsingEncoding:NSUTF8StringEncoding], [[newFile name] cStringUsingEncoding:NSUTF8StringEncoding]);
+                }
+        
+                // ++
+                [YGPerformance incrementRenamedSharedCounter];
+                [YGPerformance addSizeOfProcessedFile:newFile.size];
+            }
+            else{
+                if(!isAppModeSilent)
+                    printf("\n%s - skip rename, target file '%s' exists on disk", [[oldFile name] cStringUsingEncoding:NSUTF8StringEncoding], [[newFile name] cStringUsingEncoding:NSUTF8StringEncoding]);
+            }
+        }
+    }
+    @catch(NSException *ex){
+        printf("\nException in -[YGFile timeStamp]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
+        @throw;
     }
 }
 

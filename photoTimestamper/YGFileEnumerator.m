@@ -10,92 +10,88 @@
 
 @implementation YGFileEnumerator
 
-+(NSArray <YGFileTuple *>*)generateFileTuples:(NSArray <YGFile *>*)files{
-#ifdef FUNC_DEBUG
-#undef FUNC_DEBUG
-#endif
-    
-#ifdef FUNC_DEBUG
-    printf("\n+[YGFileEnumerator generateFileTuples]...");
-#endif
-    
-    NSMutableDictionary *tuples = [[NSMutableDictionary alloc] init];
-    
-    for(YGFile *file in files){
-#ifdef FUNC_DEBUG
-        printf("\n\t...%s", [file.name cStringUsingEncoding:NSUTF8StringEncoding]);
-        printf("\n\t...%s", [file.baseName cStringUsingEncoding:NSUTF8StringEncoding]);
-        printf("\n\t...%s", [[file description] cStringUsingEncoding:NSUTF8StringEncoding]);
-#endif
-        
-        if([tuples objectForKey:file.baseName] == nil){
-#ifdef FUNC_DEBUG
-            printf("\n\tNew tuple, with base name: %s", [file.baseName cStringUsingEncoding:NSUTF8StringEncoding]);
-#endif
-            NSArray *arr = [[NSArray alloc] initWithObjects:file, nil];
-            //YGFileTuple *tuple = [[YGFileTuple alloc] initWithName:file.baseName andItems:@[file]];
-            YGFileTuple *tuple = [[YGFileTuple alloc] initWithName:file.baseName andItems:arr];
-            [tuples setObject:tuple forKey:file.baseName];
-#ifdef FUNC_DEBUG
-            printf("\n\tTuples count: %ld", [tuples count]);
-#endif
-        }
-        else{
-            printf("\n\tAdd file to exist tuple, with base name: %s", [file.baseName cStringUsingEncoding:NSUTF8StringEncoding]);
-            [tuples[file.baseName] addFile:file];
-#ifdef FUNC_DEBUG
-            printf("\n\tTuples count: %ld", [tuples count]);
-#endif
-        }
-    } // for
-    
-#ifdef FUNC_DEBUG
-    printf("\n\tTuples count: %ld", [tuples count]);
-#endif
-    
-    return [tuples allValues];
-}
-
+/*
+ Enumerate all files in current directory. Function sort files witch can be processed.
+ Depend files add to result array in beginning and picture filess add to end.
+ Inner directories skiped.
+ */
 +(NSArray <YGFile *>*)enumerateCurDir{
-#ifdef FUNC_DEBUG
-#undef FUNC_DEBUG
-#endif
-    
-#ifdef FUNC_DEBUG
-    printf("\n+[YGFileEnumerator enumerateCurDir]...");
-#endif
     
     extern BOOL isAppModeSilent;
     
     NSMutableArray <YGFile *>*resultFiles = [[NSMutableArray alloc] init];
     
-    NSFileManager *fm = [NSFileManager defaultManager];
-    NSString *curDir = [fm currentDirectoryPath];
-    NSString *fileName = [[NSString alloc] init];
-    BOOL isDir = YES;
-    NSDirectoryEnumerator *de = [fm enumeratorAtPath:curDir];
-    
-    while((fileName = [de nextObject]) != nil){
-        [de skipDescendants];
-                
-        if([fm fileExistsAtPath:fileName isDirectory:&isDir]){
-            if(!isDir){
-                YGFile *file = [[YGFile alloc] initWithName:fileName];
-                if(file != nil && file.nameType != YGFileNameTypeWithTimeStamp){
-                    // files dependend from photo like .AAE must process first
-                    if(file.type & (YGFileTypeDependByAddingExt | YGFileTypeDependByReplacementExt))
-                        [resultFiles insertObject:file atIndex:0];
-                    else if(file.type & (YGFileTypePhoto | YGFileTypeVideo)) // skip YGFileTypeNone
-                        [resultFiles addObject:file];
+    @try{
+        NSFileManager *fm = [NSFileManager defaultManager];
+        NSString *curDir = [fm currentDirectoryPath];
+        NSString *fileName = [[NSString alloc] init];
+        BOOL isDir = YES;
+        NSDirectoryEnumerator *de = [fm enumeratorAtPath:curDir];
+        
+        while((fileName = [de nextObject]) != nil){
+            [de skipDescendants];
+            
+            if([fm fileExistsAtPath:fileName isDirectory:&isDir]){
+                if(!isDir){
+                    YGFile *file = [[YGFile alloc] initWithName:fileName];
+                    if(file != nil && file.nameType != YGFileNameTypeWithTimeStamp){
+                        // files dependend from photo like .AAE must process first
+                        if(file.type & (YGFileTypeDependByAddingExt | YGFileTypeDependByReplacementExt))
+                            [resultFiles insertObject:file atIndex:0];
+                        else if(file.type & (YGFileTypePhoto | YGFileTypeVideo)) // skip YGFileTypeNone
+                            [resultFiles addObject:file];
+                        else
+                            if(!isAppModeSilent)
+                                printf("\n%s - skip file", [file.name cStringUsingEncoding:NSUTF8StringEncoding]);
+                    }
                     else
-                        if(!isAppModeSilent && 1 != 1)
-                            printf("\n%s - skip file", [file.name cStringUsingEncoding:NSUTF8StringEncoding]);
+                        if(!isAppModeSilent)
+                            printf("\n%s - skip file, already have timestamped name", [file.name cStringUsingEncoding:NSUTF8StringEncoding]);
                 }
             }
-        }
-    } // while
-    
-    return [resultFiles mutableCopy];
+        } // while
+    }
+    @catch(NSException *ex){
+        printf("\nException in -[YGFileEnumerator enumerateCurDir]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
+        @throw;
+    }
+    @finally{
+        return [resultFiles copy];
+    }
 }
- 
+
+
+/*
+ Generate array of tuples from array of files.
+ If tuple with base name exists, file add to inner array of this tuple, else creating new tuple.
+ */
++(NSArray <YGFileTuple *>*)generateFileTuples:(NSArray <YGFile *>*)files{
+
+    NSMutableDictionary *tuples = [[NSMutableDictionary alloc] init];
+    
+    @try{
+        for(YGFile *file in files){
+            
+            if([tuples objectForKey:file.baseName] == nil){
+                
+                NSArray *arr = [[NSArray alloc] initWithObjects:file, nil];
+                //YGFileTuple *tuple = [[YGFileTuple alloc] initWithName:file.baseName andItems:@[file]];
+                YGFileTuple *tuple = [[YGFileTuple alloc] initWithName:file.baseName andItems:arr];
+                [tuples setObject:tuple forKey:file.baseName];
+            }
+            else{
+                [tuples[file.baseName] addFile:file];
+            }
+        } // for
+    }
+    @catch(NSException *ex){
+        printf("\nException in -[YGFileEnumerator generateFileTuples:]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
+        @throw;
+        
+    }
+    @finally{
+        return [tuples allValues];
+    }
+}
+
 @end

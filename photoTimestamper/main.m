@@ -11,54 +11,92 @@
 #import "YGFile.h"
 #import "YGFileTuple.h"
 #import "YGFileEnumerator.h"
-#import "YGFileRenamer.h"
 #import "YGPerformance.h"
 #import "globals.h"
 
-#define kAppVersion "0.4"
-#define kAppBildDate "1 february 2017"
+#define kAppVersion "0.7"
+#define kAppBildDate "February 8, 2017"
+
+// Process command line of app, to set app mode
+void processArgs(int argc, const char * argv[]);
+
+// Handler for all exceptions
+void handleUncaughtException(NSException *exception);
 
 int main(int argc, const char * argv[]) {
-#ifdef FUNC_DEBUG
-#undef FUNC_DEBUG
-#endif
     
     @autoreleasepool {
+
+        // Info
+        printf("\nmediaTimeStamper. v%s, %s. @Yan Gerasimuk", kAppVersion, kAppBildDate);
+
+        // Set app working modes
+        processArgs(argc, argv);
         
-        // Set app working mode: silent or noisy
-        extern BOOL isAppModeSilent;
-        if((argc == 2) && ((strcmp(argv[1], "-i") || (strcmp(argv[1], "--info")))))
-            isAppModeSilent = NO;
-        else
-            isAppModeSilent = YES;
-        
-        // info
-        printf("\nphotoTimestamper. Version %s, build: %s. @Yan Gerasimuk", kAppVersion, kAppBildDate);
+        // Set own function to handle uncaught exceptions
+        NSSetUncaughtExceptionHandler(handleUncaughtException);
         
         // Set start timestamp
         NSDate *startDate = [NSDate date];
         
-        // File processing counter
-        NSUInteger renamedFilesCount = 0;
-        
         NSArray <YGFile *>*files = [[NSArray alloc] init];
         files = [YGFileEnumerator enumerateCurDir];
         
-        // Generate collection - tuples with main and depend files over one base name
-        NSArray *tuples = [YGFileEnumerator generateFileTuples:files];
-        
-        for (YGFileTuple *tuple in tuples){
-            if([tuple timeStamp])
-                renamedFilesCount++;
+        if([files count] > 0){
+            // Generate collection - tuples with main and depend files over one base name
+            NSArray *tuples = [YGFileEnumerator generateFileTuples:files];
+            
+            for (YGFileTuple *tuple in tuples)
+                [tuple timeStamp];
+                
+                printf("\nEnumerated for rename: %ld and renamed: %ld files", [files count], [YGPerformance renamedSharedCounter]);
+                printf("\nSize of renamed files: %s (=%ld B)", [[YGPerformance sizeOfProcessedFilesInHumanStyle] cStringUsingEncoding:NSUTF8StringEncoding], [YGPerformance sizeOfProcessedFiles]);
+        }
+        else{
+            printf("\nNo files for processing");
         }
         
-        // Set finish timestamp
+        // Set finish timestamp for statistic
         NSDate *finishDate = [NSDate date];
         NSString *timeOfExecute = [NSString stringWithFormat:@"%@", [YGPerformance timeExecutingFrom:startDate to:finishDate]];
-        printf("\nStatistic. Enumerated files: %ld and renamed: %ld", (long)[files count], renamedFilesCount);
-        printf("\nTime of execution. %s", [timeOfExecute cStringUsingEncoding:NSUTF8StringEncoding]);
+        printf("\nTime of execution: %s", [timeOfExecute cStringUsingEncoding:NSUTF8StringEncoding]);
         
     }
     printf("\n\n");
     return 0;
+}
+
+/*
+ Process command line of app, to set app mode
+ */
+void processArgs(int argc, const char * argv[]){
+    // defaults
+    isAppModeSilent = YES;
+    isAppModeTest = NO;
+    
+    for(int i = 1; i < argc; i++){
+        
+        if(argv[i][1] == '-'){  // --info --metaonly
+            if(!strcmp(argv[i], "--info"))
+                isAppModeSilent = NO;
+            else if(!strcmp(argv[i], "--test"))
+                isAppModeTest = YES;
+        }
+        else{                   // -imt
+            for(int j = 1; j < strlen(argv[i]); j++){
+                if(argv[i][j] == 'i')
+                    isAppModeSilent = NO;
+                else if(argv[i][j] == 't')
+                    isAppModeTest = YES;
+            }
+        }
+    } // for
+}
+
+/*
+ Handler for all exceptions
+ */
+void handleUncaughtException(NSException *exception){
+    printf("\nUncaught earlier exception in main(). Exception: %s\n\n", [[exception description] cStringUsingEncoding:NSUTF8StringEncoding]);
+    exit(EXIT_FAILURE);
 }

@@ -8,12 +8,72 @@
 
 #import "YGPerformance.h"
 
+@interface YGPerformance()
++(NSString *)transformBytesValueToHumanStyle:(NSUInteger)value;
+@end
+    
 @implementation YGPerformance
 
-/*
-  
- Info: https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/DatesAndTimes/Articles/dtCalendricalCalculations.html#//apple_ref/doc/uid/TP40007836-SW1
- */
+static NSUInteger renamedCount = 0;
+static NSUInteger sizeOfFilesInBytes = 0;
+
+// Add size of all renamed files
++(void)addSizeOfProcessedFile:(NSUInteger) sizeOfFile{
+    @synchronized (self) {
+        sizeOfFilesInBytes += sizeOfFile;
+    }
+}
+
+
+// Value of all renamed files
++(NSUInteger)sizeOfProcessedFiles{
+    @synchronized (self) {
+        return sizeOfFilesInBytes;
+    }
+}
+
+// Value of all renamed files, formatted in human style
++(NSString *)sizeOfProcessedFilesInHumanStyle{
+    @synchronized (self) {
+        return [self transformBytesValueToHumanStyle:sizeOfFilesInBytes];
+    }
+}
+
+// String with size of renamed files, formatted in human size
++(NSString *)transformBytesValueToHumanStyle:(NSUInteger)value{
+    
+    double convertedValue = [[[NSNumber alloc] initWithLong:(long)value] doubleValue];
+        
+    int multiplyFactor = 0;
+    
+    NSArray *tokens = @[@"bytes",@"KB",@"MB",@"GB",@"TB",@"PB",@"EB",@"ZB",@"YB"];
+    
+    while (convertedValue > 1024) {
+        convertedValue /= 1024;
+        multiplyFactor++;
+    }
+    
+    return [NSString stringWithFormat:@"%4.2f %@",convertedValue, tokens[multiplyFactor]];
+}
+
+
+// Increment counter of renamed files
++(void)incrementRenamedSharedCounter{
+    @synchronized (self) {
+        renamedCount++;
+    }
+}
+
+
+// Value of counter of renamed files
++(NSUInteger)renamedSharedCounter{
+    @synchronized (self) {
+        return renamedCount;
+    }
+}
+
+
+// Time of execution of app, formatted in human style. Need start and finish dates.
 +(NSString *)timeExecutingFrom:(NSDate *)start to:(NSDate *)finish{
     
     NSMutableString *resultTime = [[NSMutableString alloc] init];

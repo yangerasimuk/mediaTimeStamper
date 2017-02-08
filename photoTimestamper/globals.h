@@ -10,3 +10,9 @@
 // NO - all information about apps work printed
 // default - YES
 BOOL isAppModeSilent;
+
+// YES - app working in test mode -> not delete old files for visual results
+// NO - real works, whithout test
+// default - NO
+BOOL isAppModeTest;
+
