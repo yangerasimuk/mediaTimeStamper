@@ -65,6 +65,7 @@ ptstamper -it or --info --test - print info about processed files and source fil
 
 ###Performance
 You know, it's difficult to say how quickly the program will process your mass data. In better way I'm give statistic of test launches on my data:
+
 1. Photo: 1000, 2,5Gb. MacBook Pro with SSD. Time: 1 minute.
 2. Photo: 800, 3,5Gb. MacBook Pro with SSD. Time: 2 minutes.
 3. Photo: 4600, 6Gb. MacBook Pro with SSD. Time: 3 minutes.
