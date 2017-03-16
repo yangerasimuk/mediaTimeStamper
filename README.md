@@ -1,7 +1,7 @@
 # photoTimestamper
 Console application for macOS with only one function - bulk rename photo/video files to more unique names using timestamp from file attributes or EXIF metadata for photo.
 
-##Story
+## Story
 
 I love to take pictures, and everybody in my family use camera to save all interesting for family history. 
 In total we have DSLR, three telephones and two tablets.
@@ -40,20 +40,20 @@ I usually rename files using one of the professional photo tool, as long as not 
 not rename video files and special dependent on the photo files, such as, .AAE (filters, effects). 
 I look for more friendly app, but found only a paid programs, so I write own.
 
-##Decision
+## Decision
 
 So, there is a problem - non-unique naming for photo files. The optimal solution to this problem seems to add to the original file name, an unique value - timestamp from Creation date. Most modern cameras store information about creating photo in EXIF. If this metadata will be unavailible, Creation date well be get from file attributes.
 
-##Setup
+## Setup
 photoTimestamper - console program for MacOS, processing files in the current folder. To make it work in any folder, 
 you must either put it in photo directory itself, or place it in one of the public folders, for example, /usr/local/bin. 
 When you build a program from XCode, executable file will be automatically copied to the /usr/local/bin.
 
-##How to launch?
+## How to launch?
 
 To run the program, open the console (Terminal), change current directory to yours, contains photo, type ptstamper and press [Enter].
 
-###Command line
+### Command line
 
 phototimestamper - the program will start with the default settings (output only the statistics, the source files will be deleted)
 
@@ -63,7 +63,7 @@ ptstamper -t or --test - source files will be saved,
 
 ptstamper -it or --info --test - print info about processed files and source files will be saved.
 
-###Performance
+### Performance
 You know, it's difficult to say how quickly the program will process your mass data. In better way I'm give statistic of test launches on my data:
 
 1. Photo: 1000, 2,5Gb. MacBook Pro with SSD. Time: 1 minute.
@@ -71,7 +71,7 @@ You know, it's difficult to say how quickly the program will process your mass d
 3. Photo: 4600, 6Gb. MacBook Pro with SSD. Time: 3 minutes.
 4. Photo: 1800, 6Gb. Macbook Pro with SSD and flash card SanDisk 64Gb/SDXC/10/3. Time: 18 minutes.
 
-###Processed files
+### Processed files
 Program rename files with source names and following extensions: photo (.jpeg, .jpg, .png, .gif), video (.mov, .mpeg, .mp4, .avi) and depend (.aae, .ytags). Nothing else will not be processed.
 
 gl hf
