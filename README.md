@@ -1,22 +1,20 @@
 # photoTimestamper
-Console application for macOS with only one function - bulk rename photo/video files to more unique names using timestamp from file attributes or EXIF metadata for photo.
+Консольная программа для macOS для массового переименования фотографий и зависимых файлов.
 
-## Story
+## Немного истории
+Я очень люблю фотографировать, и не только я один - моя семья фотает всё показавшиеся интересным или достойным сохранения в нашей семейной истории. Всего у нас есть одна любительская зеркалка, три телефона и два планшета. Фотографии я храню на дисках в самолично созданных папках, сторонние программы каталогизации и хранения избегаю.
 
-I love to take pictures, and everybody in my family use camera to save all interesting for family history. 
-In total we have DSLR, three telephones and two tablets.
+Почему я сливал фотки в одну папку? Мне нравится смотреть на событие со всех сторон, в смысле через все доступные стекла. Предположим, у вас случился день езды и вы снимали несколькими фотиками, вполне логично, что все фотки окажутся в одной папке.
 
-For everty event I manually create new folder, and download photo from all sources. I like to look at the event from all sides, through all lens.
+Всё было прекрасно, до того момента когда сохраняя фотографии в одной папке у меня пересеклись наименования разных файлов, и я чуть не потерял свои бесценные снимки.
 
-Everything was fine, until the moment, when I rewrite photo on disk by new one. This photos have same name, but different content.
-I thought for a problem, got user experience of other people and decided to add timestamp to the name, as following:
+Я немного подумал, ознакомился с опытом других людей и решил, добавлять к имени файла, временную метку, таким образом, получалось следующее:
 
 DSC_2987.JPG -> 2017-01-20_21-40-15_DSC_2987.JPG
 
-This way of organizing I liked. Besides unique names, now any file manager automatically sort photos, so I can view photos from different sources into a single time stream.
+Данный способ организации фото мне очень понравился, ведь теперь файловые менеджеры автоматически формировали сортировку по имени фото, что позволяло просматривать фото из разных источников в едином потоке. 
 
-Look at these 2 lists, which will be mor usefull:
-
+Посмотрите на эти 2 списка, какой из них будет более удобным для просмотра:
 * DSC_2987.JPG
 * DSC_2988.JPG
 * DSC_2989.JPG
@@ -25,7 +23,7 @@ Look at these 2 lists, which will be mor usefull:
 * IMG_0183.JPG
 * IMG_0184.JPG
 
-and
+и
 
 * 2017-01-20_18-33-30_IMG_0182.JPG
 * 2017-01-20_21-40-15_DSC_2987.JPG
@@ -34,48 +32,44 @@ and
 * 2017-01-20_22-05-13_IMG_0183.JPG
 * 2017-01-20_22-06-47_IMG_0184.JPG
 
-You will say that any file manager can sort by creation/modification date. But in real world file attributes rewrited during move from/to net storages or updates by some noisy programms. Right know I look hundred photos with Creation date = 2000-01-01 00:00:00.
 
-I usually rename files using one of the professional photo tool, as long as not noticed that the application does 
-not rename video files and special dependent on the photo files, such as, .AAE (filters, effects). 
-I look for more friendly app, but found only a paid programs, so I write own.
+Вы скажете, что в любой программе работающей с файлами, можно сортировать по датам создания и модификации уже тысячу лет как. На что я отвечу, что не раз сталкивался с перебиванием данных атрибутов при коприровании на разные хранилища (сетевые диски, NAS...). Прямо сейчас, перед моими глазами сотни файлов с датой создания равной 2000-01-01 00:00:00.
 
-## Decision
+Обычно я переименовывал файлы используя одну из профессиональных программ, до тех пор, пока не обратил внимание, что приложение не переименовывает видео-файлы, а также зависимые от фотографий файлы, как например, .AAE (фильтры, эффекты). Я поискал в интернете готовые решения для мака, но нашел только навороченную платную программу. Что и сподвигло меня к написанию собственной программы.
 
-So, there is a problem - non-unique naming for photo files. The optimal solution to this problem seems to add to the original file name, an unique value - timestamp from Creation date. Most modern cameras store information about creating photo in EXIF. If this metadata will be unavailible, Creation date well be get from file attributes.
+## Решение
+Итак, есть проблема - неуникальные называния для фото-файлов. Оптимальным решением данной проблемы видится добавление к исходному имени файла, уникального значения - времени создания фотографии. Большинство современных камер сохраняет информацию о создании фото в метаданных EXIF, при недоступности метаданных будет использована временная метка из аттрибутов файла.
 
-## Setup
-photoTimestamper - console program for MacOS, processing files in the current folder. To make it work in any folder, 
-you must either put it in photo directory itself, or place it in one of the public folders, for example, /usr/local/bin. 
-When you build a program from XCode, executable file will be automatically copied to the /usr/local/bin.
+## Установка
+photoTimestamper - консольная программа для macOS, обрабатывающая файлы в текущей папке. Чтобы она работала в произвольной папке, необходимо либо поместить в неё саму программу, либо разместить её в одну из общедоступных папок, например, /usr/local/bin. При сборке программы из XCode, исполняемый файл будет автоматически скопирован в usr/local/bin.
 
-## How to launch?
 
-To run the program, open the console (Terminal), change current directory to yours, contains photo, type ptstamper and press [Enter].
+## Работа
+Для запуска программы откройте консоль (Terminal), перейдите в папку с фотографиями и введите ptstamper.
 
-### Command line
+### Командная строка
+phototimestamper - программа запустится с настройками по-умолчанию (вывод только статистики, исходные файлы будут удалены),
 
-phototimestamper - the program will start with the default settings (output only the statistics, the source files will be deleted)
+ptstamper -i или --info - вывод дополнительной информации,
 
-ptstamper -i --info or - print info about processed files,
+ptstamper -t или --test - исходные файлы будут сохранены,
 
-ptstamper -t or --test - source files will be saved,
+ptstamper -it или --info --test - вывод подробной информации и удаление исходных данных.
 
-ptstamper -it or --info --test - print info about processed files and source files will be saved.
+### Производительность
+Довольно сложно говорить насколько быстро программа обработает ваш массив данных. Лучше приведу пример реальной производительности программы на моих данных:
 
-### Performance
-You know, it's difficult to say how quickly the program will process your mass data. In better way I'm give statistic of test launches on my data:
+1. Данные: 1000 фотографий, 2,5Gb. Окружение: MacBook Pro с SSD. Время: 1 минута.
+2. Данные: 800 фотографий, 3,5Gb. Окружение: MacBook Pro с SSD. Время: 2 минуты.
+3. Данные: 4600 фотографий, 6Gb. Окружение: MacBook Pro с SSD. Время: 3 минуты.
+4. Данные: 1800 фото, 6Gb. Apple Macbook Pro с SSD и флешка SanDisk 64Gb, sdxc, 10, 3. Время: 18 минут.
 
-1. Photo: 1000, 2,5Gb. MacBook Pro with SSD. Time: 1 minute.
-2. Photo: 800, 3,5Gb. MacBook Pro with SSD. Time: 2 minutes.
-3. Photo: 4600, 6Gb. MacBook Pro with SSD. Time: 3 minutes.
-4. Photo: 1800, 6Gb. Macbook Pro with SSD and flash card SanDisk 64Gb/SDXC/10/3. Time: 18 minutes.
 
-### Processed files
-Program rename files with source names and following extensions: photo (.jpeg, .jpg, .png, .gif), video (.mov, .mpeg, .mp4, .avi) and depend (.aae, .ytags). Nothing else will not be processed.
+### Обрабатываемые файлы
+Программа переименовывает файлы с исходными именами и следующийми расширениями: фото (.jpeg, .jpg, .png, .gif), видео (.mov, .mpeg, .mp4, .avi) и зависимые файлы (.aae, .ytags). Ничего более обратывать не будет.
 
 gl hf
 
-Yan Gerasimuk
+Ян Герасимук
 
-February 8, 2017
+8 февраля 2017 г.
