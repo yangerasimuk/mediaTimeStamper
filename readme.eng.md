@@ -1,4 +1,4 @@
-# photoTimestamper
+# mediaTimestamper
 Console application for macOS with only one function - bulk rename photo/video files to more unique names using timestamp from file attributes or EXIF metadata for photo.
 
 ## Story
@@ -45,23 +45,23 @@ I look for more friendly app, but found only a paid programs, so I write own.
 So, there is a problem - non-unique naming for photo files. The optimal solution to this problem seems to add to the original file name, an unique value - timestamp from Creation date. Most modern cameras store information about creating photo in EXIF. If this metadata will be unavailible, Creation date well be get from file attributes.
 
 ## Setup
-photoTimestamper - console program for MacOS, processing files in the current folder. To make it work in any folder, 
+mediaTimestamper - console program for MacOS, processing files in the current folder. To make it work in any folder, 
 you must either put it in photo directory itself, or place it in one of the public folders, for example, /usr/local/bin. 
 When you build a program from XCode, executable file will be automatically copied to the /usr/local/bin.
 
 ## How to launch?
 
-To run the program, open the console (Terminal), change current directory to yours, contains photo, type ptstamper and press [Enter].
+To run the program, open the console (Terminal), change current directory to yours, contains photo, type mtstamper and press [Enter].
 
 ### Command line
 
-phototimestamper - the program will start with the default settings (output only the statistics, the source files will be deleted)
+mtstamper - the program will start with the default settings (output only the statistics, the source files will be deleted)
 
-ptstamper -i --info or - print info about processed files,
+mtstamper -i --info or - print info about processed files,
 
-ptstamper -t or --test - source files will be saved,
+mtstamper -t or --test - source files will be saved,
 
-ptstamper -it or --info --test - print info about processed files and source files will be saved.
+mtstamper -it or --info --test - print info about processed files and source files will be saved.
 
 ### Performance
 You know, it's difficult to say how quickly the program will process your mass data. In better way I'm give statistic of test launches on my data:
