@@ -25,7 +25,7 @@ Look at these 2 lists, which will be mor usefull:
 * IMG_0183.JPG
 * IMG_0184.JPG
 
-and
+or
 
 * 2017-01-20_18-33-30_IMG_0182.JPG
 * 2017-01-20_21-40-15_DSC_2987.JPG
