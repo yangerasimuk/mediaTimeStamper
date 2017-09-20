@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13741E631E3B8DB700336264"
-               BuildableName = "ptstamper"
+               BuildableName = "mtstamper"
                BlueprintName = "mediaTimestamper"
-               ReferencedContainer = "container:mediaTimestamper.xcodeproj">
+               ReferencedContainer = "container:mediaTimeStamper.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -34,9 +34,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13741E631E3B8DB700336264"
-            BuildableName = "ptstamper"
+            BuildableName = "mtstamper"
             BlueprintName = "mediaTimestamper"
-            ReferencedContainer = "container:mediaTimestamper.xcodeproj">
+            ReferencedContainer = "container:mediaTimeStamper.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -58,9 +58,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13741E631E3B8DB700336264"
-            BuildableName = "ptstamper"
+            BuildableName = "mtstamper"
             BlueprintName = "mediaTimestamper"
-            ReferencedContainer = "container:mediaTimestamper.xcodeproj">
+            ReferencedContainer = "container:mediaTimeStamper.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -77,9 +77,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13741E631E3B8DB700336264"
-            BuildableName = "ptstamper"
+            BuildableName = "mtstamper"
             BlueprintName = "mediaTimestamper"
-            ReferencedContainer = "container:mediaTimestamper.xcodeproj">
+            ReferencedContainer = "container:mediaTimeStamper.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

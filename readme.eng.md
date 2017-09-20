@@ -1,4 +1,4 @@
-# mediaTimestamper
+# mediaTimeStamper
 Console application for macOS with only one function - bulk rename photo/video files to more unique names using timestamp from file attributes or EXIF metadata for photo.
 
 ## Story
@@ -45,7 +45,7 @@ I look for more friendly app, but found only a paid programs, so I write own.
 So, there is a problem - non-unique naming for photo files. The optimal solution to this problem seems to add to the original file name, an unique value - timestamp from Creation date. Most modern cameras store information about creating photo in EXIF. If this metadata will be unavailible, Creation date well be get from file attributes.
 
 ## Setup
-mediaTimestamper - console program for MacOS, processing files in the current folder. To make it work in any folder, 
+mediaTimeStamper - console program for MacOS, processing files in the current folder. To make it work in any folder, 
 you must either put it in photo directory itself, or place it in one of the public folders, for example, /usr/local/bin. 
 When you build a program from XCode, executable file will be automatically copied to the /usr/local/bin.
 
