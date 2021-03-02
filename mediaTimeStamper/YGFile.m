@@ -18,7 +18,7 @@
 #define kDependFilesByReplacementExtensions @[@"aae",@"AAE"]
 
 // Permissible second extension for files depend to any files
-#define kDependFilesByAddingExtensions @[@"ytags",@"YTAGS"]
+#define kDependFilesByAddingExtensions @[@"ytags",@"YTAGS", @"mar.txt"]
 
 @interface YGFile()
 // Define file for this project: photo, file depends from photo (ex: .AAE), video and others
@@ -78,7 +78,7 @@ static NSString *curDir = nil;
             
             // Base name, IMG_0224.JPG -> IMG_0244, IMG_0225.JPG.ytags -> IMG_0225
             if(type == YGFileTypeDependByAddingExt)
-                baseName = [NSString stringWithFormat:@"%@", [[name stringByDeletingPathExtension] stringByDeletingPathExtension]];
+				baseName = [self baseNameWithAddingExtName:name];
             else
                 baseName = [NSString stringWithFormat:@"%@", [name stringByDeletingPathExtension]];
             
@@ -220,13 +220,24 @@ static NSString *curDir = nil;
                 }
             }
         }
-        else if([dependByAddingExt indexOfObject:extension] != NSNotFound){
-            NSString *leadingFileName = [NSString stringWithFormat:@"%@", [name stringByDeletingPathExtension]];
-            NSFileManager *fm = [NSFileManager defaultManager];
-            if([fm fileExistsAtPath:leadingFileName]){
-                resultType = YGFileTypeDependByAddingExt;
-            }
-        }
+		else
+		{
+			for(NSString *suffix in dependByAddingExt)
+			{
+				if([name hasSuffix:suffix])
+				{
+					NSUInteger len = [name length];
+					NSUInteger loc = len - [suffix length];
+					NSRange range = NSMakeRange(loc - 1, [suffix length] + 1); // dot included
+					NSString *leading = [name stringByReplacingCharactersInRange:range
+																	  withString:@""];
+					NSFileManager *fm = [NSFileManager defaultManager];
+					if([fm fileExistsAtPath:leading]){
+						resultType = YGFileTypeDependByAddingExt;
+					}
+				}
+			}
+		}
     }
     @catch(NSException *ex){
         printf("\nException in -[YGFile defineFileType]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -327,9 +338,11 @@ static NSString *curDir = nil;
 }
 
 // Make timestamp name from file attributes
--(NSString *)makeTimestampNameFromAttributes{
+-(NSString *)makeTimestampNameFromAttributes
+{
+	extern BOOL isAppModeSilent;
 
-    NSString *resultName = @"noName";
+    NSString *resultName = nil;
     NSDate *resultDate = [[NSDate alloc] init];
     NSError *error = nil;
     
@@ -348,12 +361,10 @@ static NSString *curDir = nil;
         NSString *modificationDateString = [NSString stringWithFormat:@"%@", attributes[@"NSFileModificationDate"]];
         
         NSDateFormatter *formatterFrom = [[NSDateFormatter alloc] init];
-        [formatterFrom setDateFormat:@"yyyy-MM-dd HH:mm:ss +zzzz"]; //"2016-09-17 16:56:49 +0000"
-        NSDate *creationDate = [[NSDate alloc] init];
-        creationDate = [formatterFrom dateFromString:creationDateString];
-        NSDate *modificationDate = [[NSDate alloc] init];
-        modificationDate = [formatterFrom dateFromString:modificationDateString];
-        
+        [formatterFrom setDateFormat:@"yyyy-MM-dd HH:mm:ss Z"]; //"2016-09-17 16:56:49 +0000"
+		NSDate *creationDate = [formatterFrom dateFromString:creationDateString];
+		NSDate *modificationDate = [formatterFrom dateFromString:modificationDateString];
+
         if(creationDate == nil || modificationDate == nil){
             @throw [NSException exceptionWithName:@"-[YGFile makeTimestampNameFromAttributes]->"
                                            reason:@"Error in format from NSString to NSDate"
@@ -390,15 +401,21 @@ static NSString *curDir = nil;
                                            reason:@"Can not make result name with timestamp and base name of file"
                                          userInfo:nil];
         }
-        
-    }
-    @catch(NSException *ex){
-        printf("\nException in [YGFile makeTimestampNameFromAttributes]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
-        @throw;
-    }
-    @finally{
-        return resultName;
-    }
+	}
+	@catch(NSException *ex)
+	{
+		if (!isAppModeSilent)
+		{
+			printf("\nException in [YGFile makeTimestampNameFromAttributes]. Exception: %s",
+				   [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
+			printf("\n%s - not renamed.", [name cStringUsingEncoding:NSUTF8StringEncoding]);
+		}
+		@throw;
+	}
+	@finally
+	{
+		return resultName;
+	}
 }
 
 /*
@@ -457,7 +474,7 @@ static NSString *curDir = nil;
  */
 -(NSString *)makeTimestampNameFromEXIF{
     
-    NSString *resultName = @"";
+    NSString *resultName = nil;
     
     @try{
         CGImageSourceRef source = CGImageSourceCreateWithURL((CFURLRef)URL, NULL);
@@ -698,6 +715,39 @@ static NSString *curDir = nil;
         }
     }
     return sharedInstance;
+}
+
+#pragma mark - Private
+
+- (NSString *)baseNameWithAddingExtName:(NSString *)name
+{
+	NSMutableArray *dependByAddingExt = [[YGFile dependFileByAddingExtensions] mutableCopy];
+
+	[dependByAddingExt sortUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+		if ([((NSString *)obj1) length] > [((NSString *)obj2) length])
+			return NSOrderedAscending;
+		else
+			return NSOrderedDescending;
+	}];
+
+	NSString *basename = nil;
+	for (NSString *suffix in dependByAddingExt)
+	{
+		if ([name hasSuffix:suffix])
+		{
+			NSUInteger len = [name length];
+			NSUInteger loc = len - [suffix length];
+			NSRange range = NSMakeRange(loc - 1, [suffix length] + 1); // dot included
+			NSString *possibleName = [[name stringByReplacingCharactersInRange:range withString:@""] stringByDeletingPathExtension];
+			if([possibleName length] > 0)
+			{
+				basename = possibleName;
+				break;
+			}
+		}
+	}
+	
+	return basename;
 }
 
 @end

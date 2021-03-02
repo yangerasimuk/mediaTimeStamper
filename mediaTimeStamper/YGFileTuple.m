@@ -103,34 +103,56 @@
     
     extern BOOL isAppModeSilent;
     
-    NSString *resultName = @"";
-    
-    @try{
-        for(YGFile *f in files){
-            if(f.type == YGFileTypePhoto && [f isEXIFAvailible]){
-                resultName = [NSString stringWithFormat:@"%@", [f makeTimestampNameFromEXIF]];
-                break;
-            }
-            else if([resultName compare:@""] == NSOrderedSame)
-                resultName = [NSString stringWithFormat:@"%@", [f makeTimestampNameFromAttributes]];
-        }
-        
-        if([resultName isEqualTo:nil] || [resultName compare:@""] == NSOrderedSame || [resultName length] < 19){
-            @throw [NSException exceptionWithName:@"-[YGFile getTimestampedBaseName]->"
-                                           reason:@"Can not make result timestamped base name of tuple"
-                                         userInfo:nil];
-        }
-        
-    }
-    @catch(NSException *ex){
-        printf("\nException in [YGFile getTimestampedBaseName]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
-        @throw;
-    }
-    @finally{
-        return resultName;
-    }
-}
+	NSString *resultName = nil;
+	
+	@try
+	{
+		for(YGFile *f in files)
+		{
+			if(f.type == YGFileTypePhoto && [f isEXIFAvailible])
+			{
+				resultName = [f makeTimestampNameFromEXIF];
+				break;
+			}
+		}
+		
+		if(![self isValidTimeStampName:resultName])
+		{
+			for(YGFile *f in files)
+			{
+				resultName = [f makeTimestampNameFromAttributes];
+				if(![self isValidTimeStampName:resultName])
+				{
+					break;
+				}
+			}
+		}
+		
+		if(![self isValidTimeStampName:resultName])
+		{
+			resultName = nil;
+			@throw [NSException exceptionWithName:@"-[YGFile getTimestampedBaseName]->"
+													   
+										   reason:@"Can not make result timestamped base name of tuple"
+													 
+										 userInfo:nil];
 
+		}
+	}
+	@catch(NSException *ex)
+	{
+		if (!isAppModeSilent)
+		{
+			printf("\nException in [YGFile getTimestampedBaseName]. Exception: %s",
+				   [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
+		}
+		@throw;
+	}
+	@finally
+	{
+		return resultName;
+	}
+}
 
 /*
  Rename each file in tuple by timestamped base name. If app work in test mode old file don't remove.
@@ -144,6 +166,10 @@
     
     @try{
         NSString *newBaseName = [self getTimestampedBaseName];
+		if (!newBaseName)
+		{
+			return;
+		}
         
         for (YGFile *oldFile in files){
             NSString *oldBaseName = [NSString stringWithFormat:@"%@", oldFile.baseName];
@@ -179,6 +205,28 @@
         printf("\nException in -[YGFile timeStamp]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
         @throw;
     }
+}
+
+# pragma mark - Private
+
+- (BOOL)isValidTimeStampName:(NSString *)timeStampName
+{
+	if(!timeStampName)
+	{
+		return NO;
+	}
+	
+	if([timeStampName isEqualToString:@""])
+	{
+		return NO;
+	}
+	
+	if([timeStampName length] < 19)
+	{
+		return NO;
+	}
+	
+	return YES;
 }
 
 @end
