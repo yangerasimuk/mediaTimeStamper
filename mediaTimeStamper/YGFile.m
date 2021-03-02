@@ -78,7 +78,7 @@ static NSString *curDir = nil;
             
             // Base name, IMG_0224.JPG -> IMG_0244, IMG_0225.JPG.ytags -> IMG_0225
             if(type == YGFileTypeDependByAddingExt)
-                baseName = [NSString stringWithFormat:@"%@", [[name stringByDeletingPathExtension] stringByDeletingPathExtension]];
+				baseName = [self baseNameWithAddingExtName:name];
             else
                 baseName = [NSString stringWithFormat:@"%@", [name stringByDeletingPathExtension]];
             
@@ -220,25 +220,24 @@ static NSString *curDir = nil;
                 }
             }
         }
-//		Код правилно определяет спецСуффикс, но потом меняет базовое имя для вспом.файла
-//		else
-//		{
-//			for(NSString *suffix in dependByAddingExt)
-//			{
-//				if([name hasSuffix:suffix])
-//				{
-//					NSUInteger len = [name length];
-//					NSUInteger loc = len - [suffix length];
-//					NSRange range = NSMakeRange(loc - 1, [suffix length] + 1); // dot included
-//					NSString *leading = [name stringByReplacingCharactersInRange:range
-//																	  withString:@""];
-//					NSFileManager *fm = [NSFileManager defaultManager];
-//					if([fm fileExistsAtPath:leading]){
-//						resultType = YGFileTypeDependByAddingExt;
-//					}
-//				}
-//			}
-//		}
+		else
+		{
+			for(NSString *suffix in dependByAddingExt)
+			{
+				if([name hasSuffix:suffix])
+				{
+					NSUInteger len = [name length];
+					NSUInteger loc = len - [suffix length];
+					NSRange range = NSMakeRange(loc - 1, [suffix length] + 1); // dot included
+					NSString *leading = [name stringByReplacingCharactersInRange:range
+																	  withString:@""];
+					NSFileManager *fm = [NSFileManager defaultManager];
+					if([fm fileExistsAtPath:leading]){
+						resultType = YGFileTypeDependByAddingExt;
+					}
+				}
+			}
+		}
     }
     @catch(NSException *ex){
         printf("\nException in -[YGFile defineFileType]. Exception: %s", [[ex description] cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -716,6 +715,39 @@ static NSString *curDir = nil;
         }
     }
     return sharedInstance;
+}
+
+#pragma mark - Private
+
+- (NSString *)baseNameWithAddingExtName:(NSString *)name
+{
+	NSMutableArray *dependByAddingExt = [[YGFile dependFileByAddingExtensions] mutableCopy];
+
+	[dependByAddingExt sortUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+		if ([((NSString *)obj1) length] > [((NSString *)obj2) length])
+			return NSOrderedAscending;
+		else
+			return NSOrderedDescending;
+	}];
+
+	NSString *basename = nil;
+	for (NSString *suffix in dependByAddingExt)
+	{
+		if ([name hasSuffix:suffix])
+		{
+			NSUInteger len = [name length];
+			NSUInteger loc = len - [suffix length];
+			NSRange range = NSMakeRange(loc - 1, [suffix length] + 1); // dot included
+			NSString *possibleName = [[name stringByReplacingCharactersInRange:range withString:@""] stringByDeletingPathExtension];
+			if([possibleName length] > 0)
+			{
+				basename = possibleName;
+				break;
+			}
+		}
+	}
+	
+	return basename;
 }
 
 @end
