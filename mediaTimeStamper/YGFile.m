@@ -9,7 +9,7 @@
 #import "YGFile.h"
 
 // Permissible extensions for photo files
-#define kPhotoExtensions @[@"jpeg",@"JPEG",@"jpg",@"JPG",@"png",@"PNG",@"gif",@"GIF"]
+#define kPhotoExtensions @[@"jpeg",@"JPEG",@"jpg",@"JPG",@"png",@"PNG",@"gif",@"GIF", @"heic", @"HEIC"]
 
 // Permissible extension for video files
 #define kVideoExtensions @[@"mov",@"MOV",@"mpeg",@"MPEG",@"mp4",@"MP4",@"avi",@"AVI"]
