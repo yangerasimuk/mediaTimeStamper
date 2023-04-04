@@ -11,7 +11,7 @@ For everty event I manually create new folder, and download photo from all sourc
 Everything was fine, until the moment, when I rewrite photo on disk by new one. This photos have same name, but different content.
 I thought for a problem, got user experience of other people and decided to add timestamp to the name, as following:
 
-DSC_2987.JPG -> 2017-01-20_21-40-15_DSC_2987.JPG
+DSC_2987.JPG -> 2017-01-20_21-40-1, DSC_2987.JPG
 
 This way of organizing I liked. Besides unique names, now any file manager automatically sort photos, so I can view photos from different sources into a single time stream.
 
@@ -27,12 +27,12 @@ Look at these 2 lists, which will be mor usefull:
 
 or
 
-* 2017-01-20_18-33-30_IMG_0182.JPG
-* 2017-01-20_21-40-15_DSC_2987.JPG
-* 2017-01-20_21-45-25_DSC_2988.JPG
-* 2017-01-20_21-46-55_DSC_2989.JPG
-* 2017-01-20_22-05-13_IMG_0183.JPG
-* 2017-01-20_22-06-47_IMG_0184.JPG
+* 2017-01-20_18-33-30, IMG_0182.JPG
+* 2017-01-20_21-40-15, DSC_2987.JPG
+* 2017-01-20_21-45-25, DSC_2988.JPG
+* 2017-01-20_21-46-55, DSC_2989.JPG
+* 2017-01-20_22-05-13, IMG_0183.JPG
+* 2017-01-20_22-06-47, IMG_0184.JPG
 
 You will say that any file manager can sort by creation/modification date. But in real world file attributes rewrited during move from/to net storages or updates by some noisy programms. Right know I look hundred photos with Creation date = 2000-01-01 00:00:00.
 
@@ -72,10 +72,10 @@ You know, it's difficult to say how quickly the program will process your mass d
 4. Photo: 1800, 6Gb. Macbook Pro with SSD and flash card SanDisk 64Gb/SDXC/10/3. Time: 18 minutes.
 
 ### Processed files
-Program rename files with source names and following extensions: photo (.jpeg, .jpg, .png, .gif), video (.mov, .mpeg, .mp4, .avi) and depend (.aae, .ytags). Nothing else will not be processed.
+Program rename files with source names and following extensions: photo (.jpeg, .jpg, .png, .gif), video (.mov, .mpeg, .mp4, .avi) and depend (.aae, .mar.txt). Nothing else will not be processed.
 
 gl hf
 
 Yan Gerasimuk
 
-February 8, 2017
+April 4, 2023
