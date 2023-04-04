@@ -14,8 +14,8 @@
 #import "YGPerformance.h"
 #import "globals.h"
 
-#define kAppVersion "0.11"
-#define kAppBildDate "July 20, 2021"
+#define kAppVersion "0.2"
+#define kAppBildDate "April 4, 2023"
 
 // Process command line of app, to set app mode
 void processArgs(int argc, const char * argv[]);
