@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+
 enum YGFileType {
     YGFileTypeNone                      = 0,
     YGFileTypePhoto                     = 1 << 0,

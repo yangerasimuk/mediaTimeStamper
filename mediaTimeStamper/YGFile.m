@@ -6,6 +6,7 @@
 //  Copyright © 2017 Yan Gerasimuk. All rights reserved.
 //
 
+@import ImageIO;
 #import "YGFile.h"
 
 // Permissible extensions for photo files
@@ -277,7 +278,7 @@ static NSString *curDir = nil;
     
     YGFileNameType resultNameType = YGFileNameTypeRaw;
     NSError *error = nil;
-    NSString *pattern = @"^\\d{4}[-]\\d{2}[-]\\d{2}[_]\\d{2}[-]\\d{2}[-]\\d{2}[_].+$";
+    NSString *pattern = @"^\\d{4}[-]\\d{2}[-]\\d{2}[_]\\d{2}[-]\\d{2}[-]\\d{2}[,].+$";
     
     @try{
         
@@ -394,7 +395,7 @@ static NSString *curDir = nil;
         NSDateFormatter *formatterTo = [[NSDateFormatter alloc] init];
         [formatterTo setDateFormat:@"yyyy-MM-dd_HH-mm-ss"];
         resultName = [formatterTo stringFromDate:resultDate];
-        resultName = [NSString stringWithFormat:@"%@_%@", resultName, baseName];
+        resultName = [NSString stringWithFormat:@"%@, %@", resultName, baseName];
         
         if([resultName isEqualTo:nil] || [resultName compare:@""] == NSOrderedSame || [resultName length] < 20){
             @throw [NSException exceptionWithName:@"-[YGFile makeTimestampNameFromAttributes]->"
@@ -515,7 +516,7 @@ static NSString *curDir = nil;
                                              userInfo:nil];
             }
             
-            resultName = [NSString stringWithFormat:@"%@_%@", dateDstString, baseName];
+            resultName = [NSString stringWithFormat:@"%@, %@", dateDstString, baseName];
             
             if([resultName isEqualTo:nil] || [resultName compare:@""] == NSOrderedSame || [resultName length] < 20){
                 @throw [NSException exceptionWithName:@"-[YGFile makeTimestampNameFromEXIF]->"
